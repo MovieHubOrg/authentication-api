@@ -2,6 +2,7 @@ target/
 deploy/
 deploy-dev/
 dev-ops/
+docker/
 logs/
 db/
 !.mvn/wrapper/maven-wrapper.jar
