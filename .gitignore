@@ -1,4 +1,9 @@
-/target/
+target/
+deploy/
+deploy-dev/
+dev-ops/
+logs/
+db/
 !.mvn/wrapper/maven-wrapper.jar
 
 ### STS ###
@@ -26,10 +31,13 @@
 /.nb-gradle/
 
 # project ignore
-source/ww-auth/application-production.properties
-source/ww-auth/deploy_ec2.sh
-source/ww-auth/execute_jar_on_vm.sh
-source/ww-auth/target
-source/ww-auth/logs
-source/ww-auth/.idea
-source/ww-auth/*.iml
+source/com-authentication-api/application-prod.properties
+source/com-authentication-api/deploy_ec2.sh
+source/com-authentication-api/execute_jar_on_vm.sh
+source/com-authentication-api/target
+source/com-authentication-api/logs
+source/com-authentication-api/.idea
+source/com-authentication-api/*.iml
+
+# Environment
+.env
