@@ -1,0 +1,44 @@
+target/
+deploy/
+deploy-dev/
+dev-ops/
+docker/
+logs/
+db/
+!.mvn/wrapper/maven-wrapper.jar
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+*.log
+
+### NetBeans ###
+/nbproject/private/
+/build/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+
+# project ignore
+source/com-authentication-api/application-prod.properties
+source/com-authentication-api/deploy_ec2.sh
+source/com-authentication-api/execute_jar_on_vm.sh
+source/com-authentication-api/target
+source/com-authentication-api/logs
+source/com-authentication-api/.idea
+source/com-authentication-api/*.iml
+
+# Environment
+.env

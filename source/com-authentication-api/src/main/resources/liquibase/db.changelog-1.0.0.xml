@@ -1,0 +1,293 @@
+<?xml version="1.1" encoding="UTF-8" standalone="no"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet author="Authentication" id="1774021542343-1">
+        <createTable tableName="db_account">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_accountPK"/>
+            </column>
+            <column name="kind" type="INT"/>
+            <column name="username" type="VARCHAR(255)"/>
+            <column name="phone" type="VARCHAR(255)"/>
+            <column name="email" type="VARCHAR(255)"/>
+            <column name="password" type="VARCHAR(255)"/>
+            <column name="full_name" type="VARCHAR(255)"/>
+            <column name="group_id" type="BIGINT"/>
+            <column name="avatar_path" type="VARCHAR(255)"/>
+            <column name="is_super_admin" type="BIT"/>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-2">
+        <createTable tableName="db_group">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_groupPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="description" type="VARCHAR(1000)"/>
+            <column name="is_system_role" type="BIT"/>
+            <column name="kind" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-3">
+        <createTable tableName="db_group_permission">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_group_permissionPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="ordering" type="INT"/>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-4">
+        <createTable tableName="db_permission">
+            <column name="id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_permissionPK"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+            <column name="action" type="VARCHAR(255)"/>
+            <column name="show_menu" type="BIT"/>
+            <column name="description" type="VARCHAR(255)"/>
+            <column name="permission_group_id" type="BIGINT"/>
+            <column name="p_code" type="VARCHAR(255)"/>
+            <column name="created_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_by" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_date" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="status" type="INT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-5">
+        <createTable tableName="db_permission_group">
+            <column name="group_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="permission_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-6">
+        <createTable tableName="db_user">
+            <column name="account_id" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="db_userPK"/>
+            </column>
+            <column name="gender" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-7">
+        <createTable tableName="oauth_access_token">
+            <column name="token_id" type="VARCHAR(255)"/>
+            <column name="token" type="LONGBLOB"/>
+            <column name="authentication_id" type="VARCHAR(255)"/>
+            <column name="user_name" type="VARCHAR(255)"/>
+            <column name="client_id" type="VARCHAR(255)"/>
+            <column name="authentication" type="LONGBLOB"/>
+            <column name="refresh_token" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-8">
+        <createTable tableName="oauth_client_details">
+            <column name="client_id" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="resource_ids" type="VARCHAR(255)"/>
+            <column name="client_secret" type="VARCHAR(255)"/>
+            <column name="scope" type="VARCHAR(255)"/>
+            <column name="authorized_grant_types" type="VARCHAR(255)"/>
+            <column name="web_server_redirect_uri" type="VARCHAR(255)"/>
+            <column name="authorities" type="VARCHAR(255)"/>
+            <column name="access_token_validity" type="INT"/>
+            <column name="refresh_token_validity" type="INT"/>
+            <column name="additional_information" type="VARCHAR(4096)"/>
+            <column name="autoapprove" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-9">
+        <createTable tableName="oauth_refresh_token">
+            <column name="token_id" type="VARCHAR(255)"/>
+            <column name="token" type="LONGBLOB"/>
+            <column name="authentication" type="LONGBLOB"/>
+        </createTable>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-10">
+        <addUniqueConstraint columnNames="name" constraintName="UC_DB_GROUPNAME_COL" tableName="db_group"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-11">
+        <addUniqueConstraint columnNames="name" constraintName="UC_DB_GROUP_PERMISSIONNAME_COL"
+                             tableName="db_group_permission"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-12">
+        <addForeignKeyConstraint baseColumnNames="permission_group_id" baseTableName="db_permission"
+                                 constraintName="FK400sbviifox8miov3kq3tmn96" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id"
+                                 referencedTableName="db_group_permission" validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-13">
+        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="db_account"
+                                 constraintName="FK64k7ycl6abb79kuylmbilxplq" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_group"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-14">
+        <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="db_user"
+                                 constraintName="FKelwy3xhlg66g6qctshfc0edcm" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_account"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-15">
+        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="db_permission_group"
+                                 constraintName="FKfq2iusbvl87yreufyqsa5f6e3" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id" referencedTableName="db_group"
+                                 validate="true"/>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-16">
+        <addForeignKeyConstraint baseColumnNames="permission_id" baseTableName="db_permission_group"
+                                 constraintName="FKhyl75m0nsk3ds5eewifn3arde" deferrable="false"
+                                 initiallyDeferred="false" referencedColumnNames="id"
+                                 referencedTableName="db_permission" validate="true"/>
+    </changeSet>
+
+    <!-- INSERT INITIAL DATA -->
+    <changeSet author="Authentication" id="1774021542343-17">
+        <insert tableName="db_group">
+            <column name="id" valueNumeric="1"/>
+            <column name="name" value="ROLE ADMIN"/>
+            <column name="description" value="Role for administrator"/>
+            <column name="kind" valueNumeric="1"/>
+            <column name="is_system_role" valueBoolean="true"/>
+            <column name="status" valueNumeric="1"/>
+            <column name="created_by" value="Admin"/>
+            <column name="created_date" valueDate="2020-06-24T07:33:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2023-04-10T06:47:43"/>
+        </insert>
+        <insert tableName="db_group">
+            <column name="id" valueNumeric="2"/>
+            <column name="name" value="ROLE SUPPER ADMIN"/>
+            <column name="description" value="Role for supper admin"/>
+            <column name="kind" valueNumeric="1"/>
+            <column name="is_system_role" valueBoolean="true"/>
+            <column name="status" valueNumeric="1"/>
+            <column name="created_by" value="Admin"/>
+            <column name="created_date" valueDate="2020-06-24T08:19:59"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2023-09-30T04:45:04"/>
+        </insert>
+        <insert tableName="db_group">
+            <column name="id" valueNumeric="3"/>
+            <column name="name" value="ROLE EMPLOYEE"/>
+            <column name="description" value="Role for user"/>
+            <column name="kind" valueNumeric="2"/>
+            <column name="is_system_role" valueBoolean="true"/>
+            <column name="status" valueNumeric="1"/>
+            <column name="created_by" value="Admin"/>
+            <column name="created_date" valueDate="2020-06-24T07:33:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2020-06-24T07:33:00"/>
+        </insert>
+        <insert tableName="db_group">
+            <column name="id" valueNumeric="4"/>
+            <column name="name" value="ROLE USER"/>
+            <column name="description" value="Role for user"/>
+            <column name="kind" valueNumeric="3"/>
+            <column name="is_system_role" valueBoolean="true"/>
+            <column name="status" valueNumeric="1"/>
+            <column name="created_by" value="Admin"/>
+            <column name="created_date" valueDate="2020-06-24T07:33:00"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2020-06-24T07:33:00"/>
+        </insert>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-18">
+        <insert tableName="db_account">
+            <column name="id" valueNumeric="6783713748123648"/>
+            <column name="kind" valueNumeric="1"/>
+            <column name="username" value="admin"/>
+            <column name="email" value="admin@gmail.com"/>
+            <column name="phone"/>
+            <column name="password" value="{bcrypt}$2a$10$YMZFAA1FLQQzz29qLCtHG.8oBvq0g/6tpX0ODh269rckAU9lsgrrS"/>
+            <column name="full_name" value="Super Admin"/>
+            <column name="avatar_path"/>
+            <column name="is_super_admin" valueBoolean="true"/>
+            <column name="group_id" valueNumeric="2"/>
+            <column name="status" valueNumeric="1"/>
+            <column name="created_by" value="Admin"/>
+            <column name="created_date" valueDate="2020-06-24T00:22:30"/>
+            <column name="modified_by" value="admin"/>
+            <column name="modified_date" valueDate="2023-04-16T14:52:55"/>
+        </insert>
+    </changeSet>
+    <changeSet author="Authentication" id="1774021542343-19">
+        <insert tableName="oauth_client_details">
+            <column name="client_id" value="abc_client"/>
+            <column name="resource_ids"/>
+            <column name="client_secret" value="{bcrypt}$2a$12$zlKHpSw7.8asgQFCexLLkudLYkd9wQGElMps2yVG5p4vm2f.CTYcy"/>
+            <column name="scope" value="read,write"/>
+            <column name="authorized_grant_types"
+                    value="password,refresh_token,client_credentials,authorization_code"/>
+            <column name="web_server_redirect_uri"/>
+            <column name="authorities" value="ROLE_CLIENT,ROLE_TRUSTED_CLIENT"/>
+            <column name="access_token_validity" valueNumeric="86400"/>
+            <column name="refresh_token_validity" valueNumeric="604800"/>
+            <column name="additional_information"/>
+            <column name="autoapprove"/>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
