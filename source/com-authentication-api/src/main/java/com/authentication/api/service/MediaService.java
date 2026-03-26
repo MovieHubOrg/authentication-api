@@ -19,13 +19,13 @@ public class MediaService {
 
     public void deleteFile(String filePath) {
         if (StringUtils.isNotBlank(filePath)) {
-            feignFileMediaService.deleteListFile(new DeleteListFileForm(Collections.singletonList(filePath)));
+            handleDeleteMedia(new DeleteListFileForm(Collections.singletonList(filePath)));
         }
     }
 
     public void deleteFiles(DeleteListFileForm deleteListFileForm) {
         if (deleteListFileForm != null && !deleteListFileForm.getFiles().isEmpty()) {
-            feignFileMediaService.deleteListFile(deleteListFileForm);
+            handleDeleteMedia(deleteListFileForm);
         }
     }
 
@@ -38,8 +38,16 @@ public class MediaService {
                 }
             }
             if (!filesToDelete.isEmpty()) {
-                feignFileMediaService.deleteListFile(new DeleteListFileForm(filesToDelete));
+                handleDeleteMedia(new DeleteListFileForm(filesToDelete));
             }
+        }
+    }
+
+    private void handleDeleteMedia(DeleteListFileForm form) {
+        try {
+            feignFileMediaService.deleteListFile(form);
+        } catch (Exception e) {
+            log.error("=======> Failed to delete file: {}", e.getMessage());
         }
     }
 }

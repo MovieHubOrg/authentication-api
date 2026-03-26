@@ -21,9 +21,7 @@ public class GroupKindValidation implements ConstraintValidator<GroupKind, Integ
             return true;
         }
         return Objects.equals(value, BaseConstant.GROUP_KIND_USER)
-                || Objects.equals(value, BaseConstant.GROUP_KIND_USER_VIP)
                 || Objects.equals(value, BaseConstant.GROUP_KIND_ADMIN)
-                || Objects.equals(value, BaseConstant.GROUP_KIND_MANAGER)
                 || Objects.equals(value, BaseConstant.GROUP_KIND_EMPLOYEE);
     }
 }

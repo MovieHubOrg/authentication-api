@@ -73,7 +73,7 @@ public class GroupController extends ABasicController {
         ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
         Group group = groupRepository.findById(updateGroupForm.getId())
                 .orElseThrow(() -> new NotFoundException("[Group] Group not found", ErrorCode.GROUP_ERROR_NOT_FOUND));
-        if (group.getKind() == BaseConstant.GROUP_KIND_ADMIN && !isSuperAdmin()) {
+        if (!isSuperAdmin()) {
             throw new UnauthorizationException("Not allowed update");
         }
         // Check if the new name already exists
@@ -100,7 +100,7 @@ public class GroupController extends ABasicController {
         Group group = groupRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[Group] Group not found!", ErrorCode.GROUP_ERROR_NOT_FOUND));
 
-        if (!isSuperAdmin() && group.getKind() == BaseConstant.GROUP_KIND_ADMIN) {
+        if (!isSuperAdmin()) {
             throw new UnauthorizationException("Not allowed to get.");
         }
         return makeSuccessResponse(groupMapper.fromEntityToGroupDto(group), "Get group success");
@@ -118,5 +118,20 @@ public class GroupController extends ABasicController {
 
         ResponseListDto<List<GroupDto>> responseListDto = makeResponseListDto(groups, groupMapper::fromEntityToGroupDtoList);
         return makeSuccessResponse(responseListDto, "List group success.");
+    }
+
+    @GetMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('GR_D')")
+    public ApiMessageDto<Void> delete(@PathVariable Long id) {
+        if (!isSuperAdmin()) {
+            throw new UnauthorizationException("Not allowed");
+        }
+        Group group = groupRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("[Group] Group not found", ErrorCode.GROUP_ERROR_NOT_FOUND));
+
+        if (group.getIsSystemRole()) {
+            throw new BadRequestException("[Group] Cant delete system role", ErrorCode.GROUP_ERROR_CANT_DELETE);
+        }
+        return makeSuccessResponse("Delete group success");
     }
 }

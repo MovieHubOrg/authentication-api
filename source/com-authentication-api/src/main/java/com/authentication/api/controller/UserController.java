@@ -87,7 +87,7 @@ public class UserController extends ABasicController {
 
         account = accountMapper.fromRegisterUserFormToEntity(form);
         account.setPassword(passwordEncoder.encode(form.getPassword()));
-        account.setKind(BaseConstant.USER_KIND_USER);
+        account.setKind(BaseConstant.ACCOUNT_KIND_USER);
         account.setStatus(BaseConstant.STATUS_PENDING);
         accountRepository.save(account);
 

@@ -6,6 +6,7 @@ public class ErrorCode {
      */
     public static final String GROUP_ERROR_NAME_EXIST = "ERROR-GROUP-000";
     public static final String GROUP_ERROR_NOT_FOUND = "ERROR-GROUP-001";
+    public static final String GROUP_ERROR_CANT_DELETE = "ERROR-GROUP-002";
 
     /**
      * Permission error code

@@ -71,6 +71,30 @@ public class ABasicController {
         return false;
     }
 
+    public boolean isAdmin() {
+        BaseJwt baseJwt = userService.getAddInfoFromToken();
+        if (baseJwt != null) {
+            return Objects.equals(baseJwt.getUserKind(), BaseConstant.ACCOUNT_KIND_ADMIN);
+        }
+        return false;
+    }
+
+    public boolean isEmployee() {
+        BaseJwt baseJwt = userService.getAddInfoFromToken();
+        if (baseJwt != null) {
+            return Objects.equals(baseJwt.getUserKind(), BaseConstant.ACCOUNT_KIND_EMPLOYEE);
+        }
+        return false;
+    }
+
+    public boolean isUser() {
+        BaseJwt baseJwt = userService.getAddInfoFromToken();
+        if (baseJwt != null) {
+            return Objects.equals(baseJwt.getUserKind(), BaseConstant.ACCOUNT_KIND_USER);
+        }
+        return false;
+    }
+
     public String getCurrentToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (!(authentication instanceof AnonymousAuthenticationToken)) {

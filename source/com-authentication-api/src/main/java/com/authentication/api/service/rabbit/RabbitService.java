@@ -1,20 +1,17 @@
 package com.authentication.api.service.rabbit;
 
+import com.authentication.api.form.rabbit.BaseSendMsgForm;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.authentication.api.form.rabbit.BaseSendMsgForm;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
 public class RabbitService {
     @Autowired
     private ObjectMapper objectMapper;
-    @Autowired
-    private RestTemplate restTemplate;
     @Autowired
     private RabbitSender rabbitSender;
 

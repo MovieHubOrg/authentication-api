@@ -48,7 +48,7 @@ public class UserHandler {
     private JwtAccessTokenConverter accessTokenConverter;
 
     private final String clientId = "abc_client";
-    private final String grantType = "password";
+    private final String grantType = "user";
 
     public OAuth2AccessToken handleSocialLogin(UserGoogleInfo userInfo) throws IOException {
         String email = userInfo.getEmail();
@@ -61,7 +61,7 @@ public class UserHandler {
             account.setEmail(email);
             account.setFullName(name);
             account.setAvatarPath(picture);
-            account.setKind(BaseConstant.USER_KIND_USER);
+            account.setKind(BaseConstant.ACCOUNT_KIND_USER);
             accountRepository.save(account);
             User user = new User();
             user.setAccount(account);
@@ -108,7 +108,7 @@ public class UserHandler {
 
     private OAuth2Authentication convertAuthentication(UserDetails userDetails, OauthClientDetailsDto clientDetails, String grantType) {
         Map<String, String> requestParameters = new HashMap<>();
-        requestParameters.put("grantType", grantType);
+        requestParameters.put("grant_type", grantType);
         Set<String> scope = new HashSet<>();
         String[] scopeArray = clientDetails.getScope().split(",");
         Collections.addAll(scope, scopeArray);

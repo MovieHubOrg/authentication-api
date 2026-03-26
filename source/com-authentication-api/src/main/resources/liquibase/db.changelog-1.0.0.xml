@@ -290,4 +290,11 @@
             <column name="autoapprove"/>
         </insert>
     </changeSet>
+    <changeSet author="Authentication" id="1774021542343-20">
+        <update tableName="oauth_client_details">
+            <column name="authorized_grant_types"
+                    value="user,password,refresh_token,client_credentials,authorization_code"/>
+            <where>client_id = 'abc_client'</where>
+        </update>
+    </changeSet>
 </databaseChangeLog>

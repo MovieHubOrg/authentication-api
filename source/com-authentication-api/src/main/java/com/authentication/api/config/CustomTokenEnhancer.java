@@ -16,6 +16,7 @@ import org.springframework.security.oauth2.provider.token.TokenEnhancer;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 @Slf4j
 public class CustomTokenEnhancer implements TokenEnhancer {
@@ -40,7 +41,12 @@ public class CustomTokenEnhancer implements TokenEnhancer {
 
     private Map<String, Object> getAdditionalInfo(String username, String grantType) {
         Map<String, Object> additionalInfo = new HashMap<>();
-        AccountForTokenDto a = getAccountByUsername(username);
+        AccountForTokenDto a = null;
+        if (Objects.equals(grantType, "password")) {
+            a = getAccountByUsername(username);
+        } else if (Objects.equals(grantType, "user")) {
+            a = getAccountByEmail(username);
+        }
         if (a != null) {
             Long accountId = a.getId();
             String kind = a.getKind() + ""; // token kind
@@ -64,6 +70,21 @@ public class CustomTokenEnhancer implements TokenEnhancer {
                     "WHERE username = ? AND status = 1 LIMIT 1";
             log.debug(query);
             List<AccountForTokenDto> dto = jdbcTemplate.query(query, new Object[]{username}, new BeanPropertyRowMapper<>(AccountForTokenDto.class));
+            if (!dto.isEmpty()) return dto.get(0);
+            return null;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    public AccountForTokenDto getAccountByEmail(String email) {
+        try {
+            String query = "SELECT id, kind, username, email, full_name, is_super_admin " +
+                    "FROM " + prefix + "account " +
+                    "WHERE email = ? AND status = 1 LIMIT 1";
+            log.debug(query);
+            List<AccountForTokenDto> dto = jdbcTemplate.query(query, new Object[]{email}, new BeanPropertyRowMapper<>(AccountForTokenDto.class));
             if (!dto.isEmpty()) return dto.get(0);
             return null;
         } catch (Exception e) {

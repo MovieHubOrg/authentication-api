@@ -3,7 +3,6 @@ package com.authentication.api.constant;
 public class BaseConstant {
     public static final String DEFAULT_TIMEZONE = "UTC";
 
-
     public static final String DATE_FORMAT = "dd/MM/yyyy";
     public static final String DATE_TIME_FORMAT = "dd/MM/yyyy HH:mm:ss";
     public static final String AUTHORIZATION_HEADER = "Authorization";
@@ -25,9 +24,9 @@ public class BaseConstant {
     public static final int PLATFORM_IOS = 1;
     public static final int PLATFORM_ANDROID = 2;
 
-    public static final Integer USER_KIND_ADMIN = 1;
-    public static final Integer USER_KIND_EMPLOYEE = 2;
-    public static final Integer USER_KIND_USER = 3;
+    public static final Integer ACCOUNT_KIND_ADMIN = 1;
+    public static final Integer ACCOUNT_KIND_EMPLOYEE = 2;
+    public static final Integer ACCOUNT_KIND_USER = 3;
 
     public static final Integer USER_GENDER_MALE = 1;
     public static final Integer USER_GENDER_FEMALE = 2;
@@ -39,10 +38,8 @@ public class BaseConstant {
     public static final Integer STATUS_DELETE = -2;
 
     public static final Integer GROUP_KIND_ADMIN = 1;
-    public static final Integer GROUP_KIND_MANAGER = 2;
-    public static final Integer GROUP_KIND_EMPLOYEE = 3;
-    public static final Integer GROUP_KIND_USER = 1000;
-    public static final Integer GROUP_KIND_USER_VIP = 1001;
+    public static final Integer GROUP_KIND_EMPLOYEE = 2;
+    public static final Integer GROUP_KIND_USER = 3;
 
     public static final Integer GENDER_MALE = 1;
     public static final Integer GENDER_FEMALE = 2;

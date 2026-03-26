@@ -32,7 +32,6 @@ public class SnsController extends ABasicController {
                         .orElseThrow(() -> new NotFoundException("Account not found"));
         PushNotiRequest pushNotiRequest = new PushNotiRequest();
         pushNotiRequest.setUserId(form.getUserId());
-        pushNotiRequest.setTenantId(form.getTenantId());
         pushNotiRequest.setUserKind(account.getKind());
         pushNotiRequest.setMessage(form.getPayload());
         snsService.sendSignal("BROADCAST", pushNotiRequest);

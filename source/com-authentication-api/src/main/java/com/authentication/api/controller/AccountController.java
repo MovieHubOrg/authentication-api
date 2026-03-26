@@ -82,10 +82,13 @@ public class AccountController extends ABasicController {
 
         Group group = groupRepository.findById(form.getGroupId())
                 .orElseThrow(() -> new BadRequestException("[Group] Group not found", ErrorCode.GROUP_ERROR_NOT_FOUND));
+        if (group.getKind() != BaseConstant.GROUP_KIND_ADMIN) {
+            throw new BadRequestException("[Group] Group kind invalid", ErrorCode.GROUP_ERROR_NOT_FOUND);
+        }
 
         account = accountMapper.fromCreateAdminFormToEntity(form);
         account.setPassword(passwordEncoder.encode(form.getPassword()));
-        account.setKind(BaseConstant.USER_KIND_ADMIN);
+        account.setKind(BaseConstant.ACCOUNT_KIND_ADMIN);
         account.setGroup(group);
         accountRepository.save(account);
 
@@ -104,6 +107,9 @@ public class AccountController extends ABasicController {
 
         Group group = groupRepository.findById(form.getGroupId())
                 .orElseThrow(() -> new NotFoundException("[Group] Group not found", ErrorCode.GROUP_ERROR_NOT_FOUND));
+        if (group.getKind() != BaseConstant.GROUP_KIND_ADMIN) {
+            throw new BadRequestException("[Group] Group kind invalid", ErrorCode.GROUP_ERROR_NOT_FOUND);
+        }
 
         if (StringUtils.isNoneBlank(form.getEmail())
                 && !form.getEmail().equals(account.getEmail())
@@ -142,6 +148,9 @@ public class AccountController extends ABasicController {
     public ApiMessageDto<AccountDto> get(@PathVariable Long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[Account] Account not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND));
+        if (!BaseConstant.ACCOUNT_KIND_ADMIN.equals(account.getKind())) {
+            throw new NotFoundException("[Account] Admin not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND);
+        }
         return makeSuccessResponse(accountMapper.fromAccountToDtoShort(account), "Get account success");
     }
 
@@ -151,6 +160,9 @@ public class AccountController extends ABasicController {
     public ApiMessageDto<Void> delete(@PathVariable Long id) {
         Account account = accountRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[Account] Account not found!", ErrorCode.ACCOUNT_ERROR_NOT_FOUND));
+        if (!BaseConstant.ACCOUNT_KIND_ADMIN.equals(account.getKind())) {
+            throw new NotFoundException("[Account] Admin not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND);
+        }
         if (account.getIsSuperAdmin()) {
             throw new BadRequestException("[Account] Account super admin cannot delete", ErrorCode.ACCOUNT_ERROR_NOT_DELETE_SUPPER_ADMIN);
         }
@@ -169,6 +181,9 @@ public class AccountController extends ABasicController {
         long id = getCurrentUser();
         Account account = accountRepository.findByIdAndStatus(id, BaseConstant.STATUS_ACTIVE)
                 .orElseThrow(() -> new NotFoundException("[Account] Account not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND));
+        if (!BaseConstant.ACCOUNT_KIND_ADMIN.equals(account.getKind())) {
+            throw new NotFoundException("[Account] Admin not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND);
+        }
 
         ApiResponse<AccountDto> apiMessageDto = new ApiResponse<>();
         apiMessageDto.setData(accountMapper.fromAccountToDto(account));
@@ -180,6 +195,9 @@ public class AccountController extends ABasicController {
     public ApiMessageDto<Void> updateProfileAdmin(@Valid @RequestBody UpdateProfileAdminForm updateProfileAdminForm, BindingResult bindingResult) {
         Account account = accountRepository.findByIdAndStatus(getCurrentUser(), BaseConstant.STATUS_ACTIVE)
                 .orElseThrow(() -> new NotFoundException("[Account] Account not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND));
+        if (!BaseConstant.ACCOUNT_KIND_ADMIN.equals(account.getKind())) {
+            throw new NotFoundException("[Account] Admin not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND);
+        }
 
         if (!passwordEncoder.matches(updateProfileAdminForm.getOldPassword(), account.getPassword())) {
             throw new BadRequestException("[Account] Wrong password", ErrorCode.ACCOUNT_ERROR_WRONG_PASSWORD);
@@ -192,11 +210,9 @@ public class AccountController extends ABasicController {
         account.setFullName(updateProfileAdminForm.getFullName());
 
         String avatarPath = account.getAvatarPath();
-        if (StringUtils.isNoneBlank(updateProfileAdminForm.getAvatarPath())) {
-            if (!updateProfileAdminForm.getAvatarPath().equals(account.getAvatarPath())) {
-                // delete old image
-                mediaService.deleteFile(avatarPath);
-            }
+        if (StringUtils.isBlank(updateProfileAdminForm.getAvatarPath()) || !updateProfileAdminForm.getAvatarPath().equals(account.getAvatarPath())) {
+            // delete old image
+            mediaService.deleteFile(avatarPath);
             account.setAvatarPath(updateProfileAdminForm.getAvatarPath());
         }
         accountRepository.save(account);
@@ -253,6 +269,7 @@ public class AccountController extends ABasicController {
         if (!isSuperAdmin()) {
             throw new UnauthorizationException("[Account] Not allowed to list account.");
         }
+        accountCriteria.setKind(BaseConstant.ACCOUNT_KIND_ADMIN);
         Page<Account> accounts = accountRepository.findAll(accountCriteria.getSpecification(), pageable);
         return makeSuccessResponse(makeResponseListDto(accounts, accountMapper::fromEntityToAccountDtoList), "List account success");
     }
