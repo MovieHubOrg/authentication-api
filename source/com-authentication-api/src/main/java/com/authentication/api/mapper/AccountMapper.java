@@ -2,6 +2,7 @@ package com.authentication.api.mapper;
 
 import com.authentication.api.dto.account.AccountAutoCompleteDto;
 import com.authentication.api.dto.account.AccountDto;
+import com.authentication.api.dto.account.AccountFanoutDto;
 import com.authentication.api.form.account.CreateAccountAdminForm;
 import com.authentication.api.form.account.UpdateAccountAdminForm;
 import com.authentication.api.form.customer.CreateCustomerForm;
@@ -11,6 +12,7 @@ import com.authentication.api.form.user.UpdateUserProfileForm;
 import com.authentication.api.form.employee.CreateEmployeeForm;
 import com.authentication.api.form.employee.UpdateEmployeeForm;
 import com.authentication.api.model.Account;
+import com.authentication.api.model.User;
 import org.mapstruct.*;
 
 import java.util.List;
@@ -28,6 +30,7 @@ public interface AccountMapper {
     @Mapping(source = "group", target = "group", qualifiedByName = "fromEntityToGroupDto")
     @Mapping(source = "avatarPath", target = "avatarPath")
     @Mapping(source = "isSuperAdmin", target = "isSuperAdmin")
+    @Mapping(source = "status", target = "status")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromAccountToDto")
     AccountDto fromAccountToDto(Account account);
@@ -50,6 +53,7 @@ public interface AccountMapper {
     @Mapping(source = "avatarPath", target = "avatarPath")
     @Mapping(source = "isSuperAdmin", target = "isSuperAdmin")
     @Mapping(source = "group", target = "group", qualifiedByName = "fromEntityToGroupDtoShort")
+    @Mapping(source = "status", target = "status")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromAccountToDtoShort")
     AccountDto fromAccountToDtoShort(Account account);
@@ -132,4 +136,29 @@ public interface AccountMapper {
     @Mapping(source = "status", target = "status")
     @BeanMapping(ignoreByDefault = true)
     void mappingUpdateEmployeeFormToEntity(UpdateEmployeeForm form, @MappingTarget Account account);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "kind", target = "kind")
+    @Mapping(source = "username", target = "username")
+    @Mapping(source = "phone", target = "phone")
+    @Mapping(source = "email", target = "email")
+    @Mapping(source = "fullName", target = "fullName")
+    @Mapping(source = "avatarPath", target = "avatarPath")
+    @Mapping(source = "status", target = "status")
+    @BeanMapping(ignoreByDefault = true)
+    @Named("fromAccountToFanoutDto")
+    AccountFanoutDto fromAccountToFanoutDto(Account account);
+
+    @Mapping(source = "account.id", target = "id")
+    @Mapping(source = "account.kind", target = "kind")
+    @Mapping(source = "account.username", target = "username")
+    @Mapping(source = "account.phone", target = "phone")
+    @Mapping(source = "account.email", target = "email")
+    @Mapping(source = "account.fullName", target = "fullName")
+    @Mapping(source = "account.avatarPath", target = "avatarPath")
+    @Mapping(source = "gender", target = "gender")
+    @Mapping(source = "account.status", target = "status")
+    @BeanMapping(ignoreByDefault = true)
+    @Named("fromUserToFanoutDto")
+    AccountFanoutDto fromUserToFanoutDto(User user);
 }

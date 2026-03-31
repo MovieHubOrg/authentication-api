@@ -14,6 +14,7 @@ import com.authentication.api.mapper.GroupMapper;
 import com.authentication.api.model.Group;
 import com.authentication.api.model.Permission;
 import com.authentication.api.model.criteria.GroupCriteria;
+import com.authentication.api.repository.AccountRepository;
 import com.authentication.api.repository.GroupRepository;
 import com.authentication.api.repository.PermissionRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -38,11 +39,13 @@ import java.util.Objects;
 @Slf4j
 public class GroupController extends ABasicController {
     @Autowired
-    GroupRepository groupRepository;
+    private GroupRepository groupRepository;
     @Autowired
-    GroupMapper groupMapper;
+    private GroupMapper groupMapper;
     @Autowired
-    PermissionRepository permissionRepository;
+    private PermissionRepository permissionRepository;
+    @Autowired
+    private AccountRepository accountRepository;
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('GR_C')")
@@ -54,6 +57,10 @@ public class GroupController extends ABasicController {
         Group group = groupRepository.findFirstByName(createGroupForm.getName());
         if (group != null) {
             throw new BadRequestException("[Group] Group name is existed", ErrorCode.GROUP_ERROR_NAME_EXIST);
+        }
+
+        if (groupRepository.existsByKindAndColor(createGroupForm.getKind(), createGroupForm.getColor())) {
+            throw new BadRequestException("[Group] Group with this kind and color already exists", ErrorCode.GROUP_ERROR_COLOR_EXIST);
         }
 
         group = groupMapper.fromCreateGroupFormToEntity(createGroupForm);
@@ -81,8 +88,14 @@ public class GroupController extends ABasicController {
         if (otherGroup != null && !Objects.equals(updateGroupForm.getId(), otherGroup.getId())) {
             throw new BadRequestException("[Group] Cant update this group name because it is exist!", ErrorCode.GROUP_ERROR_NAME_EXIST);
         }
+
+        if (!Objects.equals(updateGroupForm.getColor(), group.getColor()) && groupRepository.existsByKindAndColor(group.getKind(), updateGroupForm.getColor())) {
+            throw new BadRequestException("[Group] Group with this kind and color already exists", ErrorCode.GROUP_ERROR_COLOR_EXIST);
+        }
+
         group.setName(updateGroupForm.getName());
         group.setDescription(updateGroupForm.getDescription());
+        group.setColor(updateGroupForm.getColor());
         List<Permission> permissions = new ArrayList<>();
         for (long permissionId : updateGroupForm.getPermissions()) {
             permissionRepository.findById(permissionId).ifPresent(permissions::add);
@@ -120,7 +133,20 @@ public class GroupController extends ABasicController {
         return makeSuccessResponse(responseListDto, "List group success.");
     }
 
-    @GetMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetMapping(value = "/auto-complete", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiMessageDto<ResponseListDto<List<GroupDto>>> autoComplete(GroupCriteria groupCriteria, Pageable pageable) {
+        if (!isAdmin()) {
+            groupCriteria.setExcludeKind(BaseConstant.GROUP_KIND_ADMIN);
+        }
+        Page<Group> groups = groupRepository.findAll(
+                groupCriteria.getSpecification(),
+                PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), Sort.by(new Sort.Order(Sort.Direction.DESC, "createdDate")))
+        );
+        ResponseListDto<List<GroupDto>> responseListDto = makeResponseListDto(groups, groupMapper::fromEntityToGroupDtoAutoCompleteList);
+        return makeSuccessResponse(responseListDto, "List group success.");
+    }
+
+    @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('GR_D')")
     public ApiMessageDto<Void> delete(@PathVariable Long id) {
         if (!isSuperAdmin()) {
@@ -132,6 +158,13 @@ public class GroupController extends ABasicController {
         if (group.getIsSystemRole()) {
             throw new BadRequestException("[Group] Cant delete system role", ErrorCode.GROUP_ERROR_CANT_DELETE);
         }
+
+        if (accountRepository.existsByGroupId(group.getId())) {
+            throw new BadRequestException("[Group] Cant delete this group because it is used by account", ErrorCode.GROUP_ERROR_CANT_DELETE);
+        }
+        group.getPermissions().clear();
+        groupRepository.save(group);
+        groupRepository.delete(group);
         return makeSuccessResponse("Delete group success");
     }
 }

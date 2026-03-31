@@ -12,8 +12,8 @@ public class IdGenerator implements IdentifierGenerator {
     public Serializable generate(SharedSessionContractImplementor sharedSessionContractImplementor, Object o) throws HibernateException {
         try {
             Auditable reuseId = (Auditable) o;
-            if (reuseId.getReusedId() != null) {
-                return reuseId.getReusedId();
+            if (reuseId.getId() != null) {
+                return reuseId.getId();
             }
         } catch (Exception e) {
             // e.printStackTrace();

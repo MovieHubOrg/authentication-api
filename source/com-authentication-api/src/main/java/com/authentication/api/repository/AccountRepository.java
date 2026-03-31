@@ -28,4 +28,6 @@ public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpec
     Boolean existsByUsernameAndStatusNot(String username, int status);
 
     Optional<Account> findByIdAndStatus(Long id, Integer status);
+
+    boolean existsByGroupId(Long groupId);
 }

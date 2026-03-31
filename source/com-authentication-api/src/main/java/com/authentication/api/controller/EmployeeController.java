@@ -6,6 +6,7 @@ import com.authentication.api.dto.ApiResponse;
 import com.authentication.api.dto.ErrorCode;
 import com.authentication.api.dto.ResponseListDto;
 import com.authentication.api.dto.account.AccountDto;
+import com.authentication.api.dto.account.AccountFanoutDto;
 import com.authentication.api.exception.BadRequestException;
 import com.authentication.api.exception.NotFoundException;
 import com.authentication.api.exception.UnauthorizationException;
@@ -20,9 +21,11 @@ import com.authentication.api.model.criteria.AccountCriteria;
 import com.authentication.api.repository.AccountRepository;
 import com.authentication.api.repository.GroupRepository;
 import com.authentication.api.service.MediaService;
+import com.authentication.api.service.rabbit.RabbitService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -50,6 +53,10 @@ public class EmployeeController extends ABasicController {
     private AccountMapper accountMapper;
     @Autowired
     private MediaService mediaService;
+    @Autowired
+    private RabbitService rabbitService;
+    @Value("${rabbitmq.app}")
+    private String appName;
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('EM_C')")
@@ -82,6 +89,9 @@ public class EmployeeController extends ABasicController {
         account.setKind(BaseConstant.ACCOUNT_KIND_EMPLOYEE);
         account.setGroup(group);
         accountRepository.save(account);
+
+        AccountFanoutDto data = accountMapper.fromAccountToFanoutDto(account);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_CREATED);
 
         return makeSuccessResponse("Create employee success");
     }
@@ -133,6 +143,10 @@ public class EmployeeController extends ABasicController {
         account.setKind(BaseConstant.ACCOUNT_KIND_EMPLOYEE);
         accountMapper.mappingUpdateEmployeeFormToEntity(form, account);
         accountRepository.save(account);
+
+        AccountFanoutDto data = accountMapper.fromAccountToFanoutDto(account);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_UPDATED);
+
         return makeSuccessResponse("Update employee success");
     }
 
@@ -162,7 +176,12 @@ public class EmployeeController extends ABasicController {
         if (StringUtils.isNoneBlank(avatarPath)) {
             mediaService.deleteFile(avatarPath);
         }
+
+        AccountFanoutDto data = accountMapper.fromAccountToFanoutDto(account);
         accountRepository.deleteById(id);
+
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_DELETED);
+
         return makeSuccessResponse("Delete employee success");
     }
 
@@ -218,6 +237,9 @@ public class EmployeeController extends ABasicController {
         }
         accountRepository.save(account);
 
+        AccountFanoutDto data = accountMapper.fromAccountToFanoutDto(account);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_UPDATED);
+
         return makeSuccessResponse("Update employee success");
     }
 
@@ -232,6 +254,10 @@ public class EmployeeController extends ABasicController {
         }
         account.setStatus(form.getStatus());
         accountRepository.save(account);
+
+        AccountFanoutDto data = accountMapper.fromAccountToFanoutDto(account);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_STATUS_CHANGED);
+
         return makeSuccessResponse("Change status success");
     }
 }

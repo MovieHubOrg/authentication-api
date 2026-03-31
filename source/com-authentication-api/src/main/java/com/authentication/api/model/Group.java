@@ -25,6 +25,8 @@ public class Group extends Auditable<String> {
 
     private Boolean isSystemRole = false;
 
+    private String color;
+
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.REMOVE)
     @JoinTable(name = DatabaseConstant.PREFIX_TABLE + "permission_group",
             joinColumns = @JoinColumn(name = "group_id", referencedColumnName = "id"),

@@ -20,6 +20,7 @@ public class BaseConstant {
     public static final String USERNAME_PATTERN = "^(?=.{3,20}$)(?!.*[_.]{2})[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]$";
     public static final String PASSWORD_PATTERN = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[!@#$%^&*(),.?\":{}|<>]).{8,}$";
     public static final String SERVER_ID_PATTERN = "^[a-zA-Z0-9]{1,20}$";
+    public static final String COLOR_PATTERN = "^#[0-9A-Fa-f]{6}$";
 
     public static final int PLATFORM_IOS = 1;
     public static final int PLATFORM_ANDROID = 2;
@@ -44,6 +45,12 @@ public class BaseConstant {
     public static final Integer GENDER_MALE = 1;
     public static final Integer GENDER_FEMALE = 2;
     public static final Integer GENDER_OTHER = 3;
+
+    // RabbitMQ Fanout Events
+    public static final String EVENT_ACCOUNT_CREATED = "ACCOUNT_CREATED";
+    public static final String EVENT_ACCOUNT_UPDATED = "ACCOUNT_UPDATED";
+    public static final String EVENT_ACCOUNT_DELETED = "ACCOUNT_DELETED";
+    public static final String EVENT_ACCOUNT_STATUS_CHANGED = "ACCOUNT_STATUS_CHANGED";
 
     private BaseConstant() {
         throw new IllegalStateException("Utility class");

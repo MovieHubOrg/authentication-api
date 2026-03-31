@@ -297,4 +297,9 @@
             <where>client_id = 'abc_client'</where>
         </update>
     </changeSet>
+    <changeSet author="Authentication" id="1774924909208-1">
+        <addColumn tableName="db_group">
+            <column name="color" type="varchar(255)" afterColumn="is_system_role"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

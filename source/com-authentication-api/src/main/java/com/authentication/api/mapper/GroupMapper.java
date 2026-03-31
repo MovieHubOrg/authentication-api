@@ -15,6 +15,7 @@ public interface GroupMapper {
     @Mapping(source = "name", target = "name")
     @Mapping(source = "description", target = "description")
     @Mapping(source = "kind", target = "kind")
+    @Mapping(source = "color", target = "color")
     @BeanMapping(ignoreByDefault = true)
     Group fromCreateGroupFormToEntity(CreateGroupForm createGroupForm);
 
@@ -23,6 +24,7 @@ public interface GroupMapper {
     @Mapping(source = "kind", target = "kind")
     @Mapping(source = "description", target = "description")
     @Mapping(source = "isSystemRole", target = "isSystemRole")
+    @Mapping(source = "color", target = "color")
     @Mapping(source = "permissions", target = "permissions", qualifiedByName = "fromEntityToPermissionDtoShortList")
     @Mapping(source = "createdDate", target = "createdDate")
     @Mapping(source = "modifiedDate", target = "modifiedDate")
@@ -36,6 +38,7 @@ public interface GroupMapper {
     @Mapping(source = "kind", target = "kind")
     @Mapping(source = "description", target = "description")
     @Mapping(source = "isSystemRole", target = "isSystemRole")
+    @Mapping(source = "color", target = "color")
     @Mapping(source = "createdDate", target = "createdDate")
     @Mapping(source = "modifiedDate", target = "modifiedDate")
     @Mapping(source = "status", target = "status")
@@ -50,6 +53,7 @@ public interface GroupMapper {
     @Mapping(source = "id", target = "id")
     @Mapping(source = "name", target = "name")
     @Mapping(source = "kind", target = "kind")
+    @Mapping(source = "color", target = "color")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromEntityToGroupDtoAutoComplete")
     GroupDto fromEntityToGroupDtoAutoComplete(Group group);

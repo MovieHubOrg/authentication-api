@@ -1,6 +1,7 @@
 package com.authentication.api.repository;
 
 import com.authentication.api.model.Group;
+import io.swagger.models.auth.In;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,6 +15,10 @@ public interface GroupRepository extends JpaRepository<Group, Long>, JpaSpecific
     Group findFirstByName(String name);
 
     Optional<Group> findFirstByKindAndIsSystemRole(Integer kind, Boolean isSystemRole);
+
+    boolean existsByKindAndColor(Integer kind, String color);
+
+    Optional<Group> findByKindAndColor(Integer kind, String color);
 
     @Query("SELECT g  FROM Group g where g.isSystemRole = false and g.kind = :kind")
     Page<Group> findAllByKind(@Param("kind") int kind, Pageable pageable);

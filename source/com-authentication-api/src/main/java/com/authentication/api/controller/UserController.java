@@ -4,6 +4,7 @@ import com.authentication.api.constant.BaseConstant;
 import com.authentication.api.dto.ApiMessageDto;
 import com.authentication.api.dto.ErrorCode;
 import com.authentication.api.dto.ResponseListDto;
+import com.authentication.api.dto.account.AccountFanoutDto;
 import com.authentication.api.dto.user.GoogleMobileCallback;
 import com.authentication.api.dto.user.GoogleWebCallback;
 import com.authentication.api.dto.user.UserDto;
@@ -20,11 +21,13 @@ import com.authentication.api.model.criteria.UserCriteria;
 import com.authentication.api.repository.AccountRepository;
 import com.authentication.api.repository.UserRepository;
 import com.authentication.api.service.*;
+import com.authentication.api.service.rabbit.RabbitService;
 import com.authentication.api.utils.TemplateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -75,7 +78,13 @@ public class UserController extends ABasicController {
     @Autowired
     private CommonAsyncService commonAsyncService;
 
+    @Autowired
+    private RabbitService rabbitService;
+
     private final Integer otpLength = 6;
+
+    @Value("${rabbitmq.app}")
+    private String appName;
 
     @Transactional
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -117,6 +126,9 @@ public class UserController extends ABasicController {
         User user = new User();
         user.setAccount(account);
         userRepository.save(user);
+
+        AccountFanoutDto data = accountMapper.fromUserToFanoutDto(user);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_CREATED);
 
         otpService.deleteOtp(form.getEmail());
         return makeSuccessResponse("Verify otp success");
@@ -206,6 +218,10 @@ public class UserController extends ABasicController {
 
 //        userMapper.fromUpdateUserFormToEntity(form, user);
         userRepository.save(user);
+
+        AccountFanoutDto data = accountMapper.fromUserToFanoutDto(user);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_UPDATED);
+
         return makeSuccessResponse("Update user success");
     }
 
@@ -219,6 +235,13 @@ public class UserController extends ABasicController {
         user.getAccount().setStatus(form.getStatus());
         accountRepository.save(user.getAccount());
         userRepository.save(user);
+
+        AccountFanoutDto data = accountMapper.fromUserToFanoutDto(user);
+        rabbitService.handleSendFanout(
+                appName,
+                data,
+                BaseConstant.EVENT_ACCOUNT_STATUS_CHANGED
+        );
 
         return makeSuccessResponse("Change status success");
     }
@@ -240,9 +263,14 @@ public class UserController extends ABasicController {
     public ApiMessageDto<Void> delete(@PathVariable("id") Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
+
+        AccountFanoutDto data = accountMapper.fromUserToFanoutDto(user);
+
         mediaService.deleteFile(user.getAccount().getAvatarPath());
         userRepository.deleteById(id);
         accountRepository.deleteById(id);
+
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_DELETED);
 
         return makeSuccessResponse("Delete user success");
     }
@@ -297,6 +325,10 @@ public class UserController extends ABasicController {
 
         userMapper.fromUpdateUserProfileFormToEntity(form, user);
         userRepository.save(user);
+
+        AccountFanoutDto data = accountMapper.fromUserToFanoutDto(user);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_UPDATED);
+
         return makeSuccessResponse("Update user profile success");
     }
 

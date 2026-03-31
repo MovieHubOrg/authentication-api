@@ -1,5 +1,6 @@
 package com.authentication.api.service.rabbit;
 
+import org.springframework.amqp.core.FanoutExchange;
 import org.springframework.amqp.core.Queue;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -11,12 +12,22 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitConfiguration {
     @Value("${rabbitmq.media.queue}")
     private String mediaQueue;
+
+    @Value("${rabbitmq.account.exchange}")
+    private String accountExchange;
+
     @Bean
     public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
         return new RabbitAdmin(connectionFactory);
     }
+
     @Bean
     public Queue mediaQueue() {
         return new Queue(mediaQueue, true);
+    }
+
+    @Bean
+    public FanoutExchange accountFanoutExchange() {
+        return new FanoutExchange(accountExchange, true, false);
     }
 }

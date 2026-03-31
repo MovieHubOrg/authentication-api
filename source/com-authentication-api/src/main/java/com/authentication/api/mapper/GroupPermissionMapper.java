@@ -24,7 +24,6 @@ public interface GroupPermissionMapper {
     List<GroupPermissionDto> fromEntityToGroupPermissionDtoList(List<GroupPermission> groupPermissions);
 
     @Mapping(source = "name", target = "name")
-    @Mapping(source = "ordering", target = "ordering")
     @BeanMapping(ignoreByDefault = true)
     GroupPermission fromCreateGroupPermissionFormToEntity(CreateGroupPermissionForm form);
 

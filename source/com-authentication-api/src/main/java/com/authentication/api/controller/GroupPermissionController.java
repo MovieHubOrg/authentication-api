@@ -37,11 +37,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class GroupPermissionController extends ABasicController {
     @Autowired
-    GroupPermissionRepository groupPermissionRepository;
+    private GroupPermissionRepository groupPermissionRepository;
     @Autowired
-    GroupPermissionMapper groupPermissionMapper;
+    private GroupPermissionMapper groupPermissionMapper;
     @Autowired
-    PermissionRepository permissionRepository;
+    private PermissionRepository permissionRepository;
 
     @PostMapping(value = "/create", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('GR_PER_C')")
@@ -52,6 +52,8 @@ public class GroupPermissionController extends ABasicController {
         }
 
         groupPermission = groupPermissionMapper.fromCreateGroupPermissionFormToEntity(form);
+        int ordering = groupPermissionRepository.findMaxOrdering().map(o -> o + 1).orElse(0);
+        groupPermission.setOrdering(ordering);
         groupPermissionRepository.save(groupPermission);
 
         return makeSuccessResponse("Create group permission success");

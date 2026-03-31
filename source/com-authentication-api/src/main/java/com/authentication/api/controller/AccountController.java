@@ -6,6 +6,7 @@ import com.authentication.api.dto.ApiResponse;
 import com.authentication.api.dto.ErrorCode;
 import com.authentication.api.dto.ResponseListDto;
 import com.authentication.api.dto.account.AccountDto;
+import com.authentication.api.dto.account.AccountFanoutDto;
 import com.authentication.api.dto.account.ForgetPasswordDto;
 import com.authentication.api.dto.account.RequestForgetPasswordForm;
 import com.authentication.api.exception.BadRequestException;
@@ -23,11 +24,13 @@ import com.authentication.api.repository.AccountRepository;
 import com.authentication.api.repository.GroupRepository;
 import com.authentication.api.service.BaseApiService;
 import com.authentication.api.service.MediaService;
+import com.authentication.api.service.rabbit.RabbitService;
 import com.authentication.api.utils.AESUtils;
 import com.authentication.api.utils.ConvertUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -57,6 +60,10 @@ public class AccountController extends ABasicController {
     private BaseApiService baseApiService;
     @Autowired
     private MediaService mediaService;
+    @Autowired
+    private RabbitService rabbitService;
+    @Value("${rabbitmq.app}")
+    private String appName;
 
     @PostMapping(value = "/create-admin", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('ACC_C_AD')")
@@ -91,6 +98,9 @@ public class AccountController extends ABasicController {
         account.setKind(BaseConstant.ACCOUNT_KIND_ADMIN);
         account.setGroup(group);
         accountRepository.save(account);
+
+        AccountFanoutDto data = accountMapper.fromAccountToFanoutDto(account);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_CREATED);
 
         return makeSuccessResponse("Create account admin success");
     }
@@ -140,6 +150,9 @@ public class AccountController extends ABasicController {
         accountMapper.mappingUpdateAdminFormToEntity(form, account);
         accountRepository.save(account);
 
+        AccountFanoutDto data = accountMapper.fromAccountToFanoutDto(account);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_UPDATED);
+
         return makeSuccessResponse("Update account admin success");
     }
 
@@ -171,7 +184,11 @@ public class AccountController extends ABasicController {
         if (StringUtils.isNoneBlank(avatarPath)) {
             mediaService.deleteFile(avatarPath);
         }
+
+        AccountFanoutDto data = accountMapper.fromAccountToFanoutDto(account);
         accountRepository.deleteById(id);
+
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_DELETED);
 
         return makeSuccessResponse("Delete Account success");
     }
@@ -216,6 +233,9 @@ public class AccountController extends ABasicController {
             account.setAvatarPath(updateProfileAdminForm.getAvatarPath());
         }
         accountRepository.save(account);
+
+        AccountFanoutDto data = accountMapper.fromAccountToFanoutDto(account);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_UPDATED);
 
         return makeSuccessResponse("Update admin account success");
     }

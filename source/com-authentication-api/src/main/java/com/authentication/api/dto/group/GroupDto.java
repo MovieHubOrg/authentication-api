@@ -19,6 +19,8 @@ public class GroupDto extends ABasicAdminDto {
     private String description;
     @ApiModelProperty(name = "kind")
     private int kind;
+    @ApiModelProperty(name = "color")
+    private String color;
     @ApiModelProperty(name = "permissions")
     private List<PermissionDto> permissions;
     @ApiModelProperty(name = "isSystemRole")

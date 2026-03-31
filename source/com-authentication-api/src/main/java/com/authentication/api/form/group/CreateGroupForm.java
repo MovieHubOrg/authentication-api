@@ -1,5 +1,6 @@
 package com.authentication.api.form.group;
 
+import com.authentication.api.validation.ColorConstraint;
 import com.authentication.api.validation.GroupKind;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -28,4 +29,8 @@ public class CreateGroupForm {
     @GroupKind
     @ApiModelProperty(name = "kind", required = true)
     private Integer kind;
+
+    @ColorConstraint
+    @ApiModelProperty(name = "color", required = true)
+    private String color;
 }

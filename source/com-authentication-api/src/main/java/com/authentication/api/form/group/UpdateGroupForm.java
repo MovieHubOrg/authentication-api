@@ -1,8 +1,8 @@
 package com.authentication.api.form.group;
 
+import com.authentication.api.validation.ColorConstraint;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -23,4 +23,7 @@ public class UpdateGroupForm {
     @NotNull(message = "permissions cant not be null")
     @ApiModelProperty(name = "permissions", required = true)
     private Long[] permissions;
+    @ColorConstraint
+    @ApiModelProperty(name = "color", required = true)
+    private String color;
 }
