@@ -3,6 +3,8 @@ package com.authentication.api.repository;
 import com.authentication.api.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 import java.util.Optional;
 
@@ -30,4 +32,7 @@ public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpec
     Optional<Account> findByIdAndStatus(Long id, Integer status);
 
     boolean existsByGroupId(Long groupId);
+
+    @Query("SELECT a FROM Account a WHERE (a.username = :usernameOrEmail OR a.email = :usernameOrEmail) AND a.status != :status")
+    Optional<Account> findByUsernameOrEmailAndStatusNot(@Param("usernameOrEmail") String usernameOrEmail, @Param("status") int status);
 }

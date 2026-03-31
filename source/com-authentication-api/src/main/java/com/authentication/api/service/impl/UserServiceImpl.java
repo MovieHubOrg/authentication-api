@@ -50,7 +50,7 @@ public class UserServiceImpl implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String userId) {
-        Account user = accountRepository.findAccountByUsername(userId);
+        Account user = accountRepository.findByUsernameOrEmailAndStatusNot(userId, BaseConstant.STATUS_DELETE).orElse(null);
         if (user == null) {
             log.error("Invalid username or password.");
             throw new UsernameNotFoundException("Invalid username or password.");
@@ -62,7 +62,9 @@ public class UserServiceImpl implements UserDetailsService {
         }
         Set<GrantedAuthority> grantedAuthorities = getAccountPermission(user);
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), enabled, true, true, true, grantedAuthorities);
+        // Return email for user kind, username for admin/employee
+        String principal = Objects.equals(user.getKind(), BaseConstant.ACCOUNT_KIND_USER) ? user.getEmail() : user.getUsername();
+        return new org.springframework.security.core.userdetails.User(principal, user.getPassword(), enabled, true, true, true, grantedAuthorities);
     }
 
     private Set<GrantedAuthority> getAccountPermission(Account user) {

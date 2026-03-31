@@ -23,6 +23,7 @@ import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.OAuth2Request;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.TokenEnhancerChain;
+import org.springframework.security.oauth2.provider.token.TokenStore;
 import org.springframework.security.oauth2.provider.token.store.JwtAccessTokenConverter;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,7 @@ public class UserHandler {
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
-    private DefaultTokenServices tokenServices;
+    private TokenStore tokenStore;
     @Autowired
     private JwtAccessTokenConverter accessTokenConverter;
 
@@ -94,6 +95,9 @@ public class UserHandler {
             OAuth2Authentication authentication = convertAuthentication(userPrincipal, clientDetails, grantType);
             TokenEnhancerChain tokenEnhancerChain = new TokenEnhancerChain();
             tokenEnhancerChain.setTokenEnhancers(Arrays.asList(new CustomTokenEnhancer(jdbcTemplate), accessTokenConverter));
+
+            DefaultTokenServices tokenServices = new DefaultTokenServices();
+            tokenServices.setTokenStore(tokenStore);
             tokenServices.setTokenEnhancer(tokenEnhancerChain);
             tokenServices.setReuseRefreshToken(false);
             tokenServices.setSupportRefreshToken(true);
