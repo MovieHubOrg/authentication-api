@@ -302,4 +302,12 @@
             <column name="color" type="varchar(255)" afterColumn="is_system_role"/>
         </addColumn>
     </changeSet>
+    <changeSet author="Authentication" id="1774969650456-2">
+        <addColumn tableName="db_user">
+            <column name="settings" type="TEXT" afterColumn="gender"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="Authentication" id="1774969650456-1">
+        <addNotNullConstraint columnDataType="int" columnName="kind" tableName="db_group" validate="true"/>
+    </changeSet>
 </databaseChangeLog>

@@ -344,8 +344,8 @@
                     <diffChangeLogFile>${basedir}/src/main/resources/liquibase/${maven.build.timestamp}_changelog.xml
                     </diffChangeLogFile>
                     <!--					<outputChangeLogFile>${basedir}/src/main/resources/liquibase/db.changelog-1.0.0-backup.xml</outputChangeLogFile>-->
-                    <outputChangeLogFile>${basedir}/src/main/resources/liquibase/db.structure-1.0.0.xml
-                    </outputChangeLogFile>
+                    <outputChangeLogFile>${basedir}/src/main/resources/liquibase/db.structure-1.0.0.xml</outputChangeLogFile>
+                    <diffExcludeObjects>table:oauth_.*, table:databasechangelog, table:databasechangeloglock</diffExcludeObjects>
                     <driver>com.mysql.cj.jdbc.Driver</driver>
                     <url>jdbc:mysql://localhost:3308/db_authentication</url>
                     <username>root</username>

@@ -23,4 +23,7 @@ public class User {
     private Account account;
 
     private Integer gender = BaseConstant.GENDER_OTHER;
+
+    @Column(columnDefinition = "TEXT")
+    private String settings;
 }

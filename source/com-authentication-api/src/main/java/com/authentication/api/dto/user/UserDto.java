@@ -37,4 +37,7 @@ public class UserDto extends ABasicAdminDto {
 
     @ApiModelProperty(name = "gender")
     private Integer gender;
+
+    @ApiModelProperty(name = "settings")
+    private String settings;
 }

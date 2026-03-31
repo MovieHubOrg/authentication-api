@@ -1,5 +1,7 @@
 package com.authentication.api.constant;
 
+import java.util.List;
+
 public class BaseConstant {
     public static final String DEFAULT_TIMEZONE = "UTC";
 
@@ -45,6 +47,26 @@ public class BaseConstant {
     public static final Integer GENDER_MALE = 1;
     public static final Integer GENDER_FEMALE = 2;
     public static final Integer GENDER_OTHER = 3;
+
+    public static final String USER_SETTINGS_SAMPLE_DATA = "{\"autoSkipIntro\":false,\"autoNextEpisode\":true,\"resolution\":3,\"brightness\":50,\"audio\":80,\"playbackSpeed\":1.0}";
+
+    public static final Integer RESOLUTION_HIGHEST = 1;
+    public static final Integer RESOLUTION_1440P = 2;
+    public static final Integer RESOLUTION_1080P = 3;
+    public static final Integer RESOLUTION_720P = 4;
+
+    public static final Double PLAYBACK_SPEED_025 = 0.25;
+    public static final Double PLAYBACK_SPEED_05 = 0.5;
+    public static final Double PLAYBACK_SPEED_075 = 0.75;
+    public static final Double PLAYBACK_SPEED_1 = 1.0;
+    public static final Double PLAYBACK_SPEED_125 = 1.25;
+    public static final Double PLAYBACK_SPEED_15 = 1.5;
+    public static final Double PLAYBACK_SPEED_175 = 1.75;
+    public static final Double PLAYBACK_SPEED_2 = 2.0;
+    public static final List<Double> PLAYBACK_SPEEDS = List.of(
+            PLAYBACK_SPEED_025, PLAYBACK_SPEED_05, PLAYBACK_SPEED_075, PLAYBACK_SPEED_1,
+            PLAYBACK_SPEED_125, PLAYBACK_SPEED_15, PLAYBACK_SPEED_175, PLAYBACK_SPEED_2
+    );
 
     // RabbitMQ Fanout Events
     public static final String EVENT_ACCOUNT_CREATED = "ACCOUNT_CREATED";

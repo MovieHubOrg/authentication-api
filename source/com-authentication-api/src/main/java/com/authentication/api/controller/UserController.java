@@ -24,6 +24,7 @@ import com.authentication.api.service.*;
 import com.authentication.api.service.rabbit.RabbitService;
 import com.authentication.api.utils.TemplateUtils;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,6 +37,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -80,6 +82,9 @@ public class UserController extends ABasicController {
 
     @Autowired
     private RabbitService rabbitService;
+
+    @Autowired
+    private ObjectMapper objectMapper;
 
     private final Integer otpLength = 6;
 
@@ -209,7 +214,7 @@ public class UserController extends ABasicController {
     @Transactional
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USR_U')")
-    public ApiMessageDto<Void> update(@Valid @RequestBody UpdateUserForm form) throws JsonProcessingException {
+    public ApiMessageDto<Void> update(@Valid @RequestBody UpdateUserForm form, BindingResult bindingResult) throws JsonProcessingException {
         User user = userRepository.findById(form.getId())
                 .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
@@ -228,7 +233,7 @@ public class UserController extends ABasicController {
     @Transactional
     @PutMapping(value = "/change-status", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USR_U')")
-    public ApiMessageDto<Void> changeStatus(@Valid @RequestBody ChangeStatusForm form) {
+    public ApiMessageDto<Void> changeStatus(@Valid @RequestBody ChangeStatusForm form, BindingResult bindingResult) {
         User user = userRepository.findById(form.getId())
                 .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
@@ -276,7 +281,7 @@ public class UserController extends ABasicController {
     }
 
     @PostMapping(value = "/login", produces = MediaType.APPLICATION_JSON_VALUE)
-    public OAuth2AccessToken login(@Valid @RequestBody LoginUserForm form) {
+    public OAuth2AccessToken login(@Valid @RequestBody LoginUserForm form, BindingResult bindingResult) {
         User user = userRepository.findFirstByAccountEmailAndAccountStatusNot(form.getEmail(), BaseConstant.STATUS_DELETE)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid username or password."));
 
@@ -301,7 +306,7 @@ public class UserController extends ABasicController {
 
     @Transactional
     @PutMapping(value = "/update-profile", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiMessageDto<Void> updateProfile(@Valid @RequestBody UpdateUserProfileForm form) throws JsonProcessingException {
+    public ApiMessageDto<Void> updateProfile(@Valid @RequestBody UpdateUserProfileForm form, BindingResult bindingResult) throws JsonProcessingException {
         User user = userRepository.findByIdAndAccountStatus(getCurrentUser(), BaseConstant.STATUS_ACTIVE)
                 .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
@@ -334,7 +339,7 @@ public class UserController extends ABasicController {
 
     @Transactional
     @PutMapping(value = "/change-password", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiMessageDto<Void> changePassword(@Valid @RequestBody ChangePasswordForm form) {
+    public ApiMessageDto<Void> changePassword(@Valid @RequestBody ChangePasswordForm form, BindingResult bindingResult) {
         User user = userRepository.findById(getCurrentUser())
                 .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
@@ -360,7 +365,7 @@ public class UserController extends ABasicController {
 
     @Transactional
     @PostMapping(value = "/auth/web-callback", produces = MediaType.APPLICATION_JSON_VALUE)
-    public OAuth2AccessToken socialWebCallback(@Valid @RequestBody GoogleWebCallback googleCallback) throws IOException {
+    public OAuth2AccessToken socialWebCallback(@Valid @RequestBody GoogleWebCallback googleCallback, BindingResult bindingResult) throws IOException {
         UserGoogleInfo userInfo = googleService.getUserInfo(googleCallback.getCode());
         OAuth2AccessToken result = loginService.handleSocialLogin(userInfo);
         log.info(result.toString());
@@ -370,11 +375,27 @@ public class UserController extends ABasicController {
 
     @Transactional
     @PostMapping(value = "/auth/mobile-callback", produces = MediaType.APPLICATION_JSON_VALUE)
-    public OAuth2AccessToken socialMobileCallback(@Valid @RequestBody GoogleMobileCallback callback) throws IOException {
+    public OAuth2AccessToken socialMobileCallback(@Valid @RequestBody GoogleMobileCallback callback, BindingResult bindingResult) throws IOException {
         UserGoogleInfo userInfo = googleService.verifyIdToken(callback.getIdToken(), callback.getPlatform());
         OAuth2AccessToken result = loginService.handleSocialLogin(userInfo);
         log.info(result.toString());
 
         return result;
+    }
+
+    @Transactional
+    @PutMapping(value = "/update-settings", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiMessageDto<Void> updateSettings(@Valid @RequestBody UserSettingsForm form) {
+        User user = userRepository.findByIdAndAccountStatus(getCurrentUser(), BaseConstant.STATUS_ACTIVE)
+                .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
+        String settingsJson;
+        try {
+            settingsJson = objectMapper.writeValueAsString(form);
+        } catch (JsonProcessingException e) {
+            throw new BadRequestException("Failed to process settings");
+        }
+        user.setSettings(settingsJson);
+        userRepository.save(user);
+        return makeSuccessResponse("Update settings success");
     }
 }

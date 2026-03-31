@@ -21,6 +21,7 @@ public interface UserMapper {
     @Mapping(source = "account.avatarPath", target = "avatarPath")
     @Mapping(source = "account.status", target = "status")
     @Mapping(source = "gender", target = "gender")
+    @Mapping(source = "settings", target = "settings")
     @BeanMapping(ignoreByDefault = true)
     @Named("entityToUserDto")
     UserDto entityToUserDto(User user);
@@ -36,17 +37,13 @@ public interface UserMapper {
     @Mapping(source = "account.fullName", target = "fullName")
     @Mapping(source = "account.avatarPath", target = "avatarPath")
     @Mapping(source = "gender", target = "gender")
+    @Mapping(source = "settings", target = "settings")
     @Mapping(source = "account.group", target = "group", qualifiedByName = "fromEntityToGroupDtoAutoComplete")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromEntityToUserDtoProfile")
     UserDto fromEntityToUserDtoProfile(User user);
-//
-//    @Mapping(source = "status", target = "status")
-//    @BeanMapping(ignoreByDefault = true)
-//    void fromUpdateUserFormToEntity(UpdateUserForm form, @MappingTarget User user);
 
     @Mapping(source = "gender", target = "gender")
     @BeanMapping(ignoreByDefault = true)
     void fromUpdateUserProfileFormToEntity(UpdateUserProfileForm form, @MappingTarget User user);
-
 }

@@ -12,6 +12,7 @@ import com.authentication.api.dto.account.RequestForgetPasswordForm;
 import com.authentication.api.exception.BadRequestException;
 import com.authentication.api.exception.NotFoundException;
 import com.authentication.api.exception.UnauthorizationException;
+import com.authentication.api.form.ChangeStatusForm;
 import com.authentication.api.form.account.CreateAccountAdminForm;
 import com.authentication.api.form.account.ForgetPasswordForm;
 import com.authentication.api.form.account.UpdateAccountAdminForm;
@@ -292,5 +293,30 @@ public class AccountController extends ABasicController {
         accountCriteria.setKind(BaseConstant.ACCOUNT_KIND_ADMIN);
         Page<Account> accounts = accountRepository.findAll(accountCriteria.getSpecification(), pageable);
         return makeSuccessResponse(makeResponseListDto(accounts, accountMapper::fromEntityToAccountDtoList), "List account success");
+    }
+
+    @Transactional
+    @PutMapping(value = "/change-status", produces = MediaType.APPLICATION_JSON_VALUE)
+    @PreAuthorize("hasRole('ACC_U_AD')")
+    public ApiMessageDto<Void> changeStatus(@Valid @RequestBody ChangeStatusForm form) {
+        if (!isSuperAdmin()) {
+            throw new UnauthorizationException("Not allowed");
+        }
+        Account account = accountRepository.findById(form.getId())
+                .orElseThrow(() -> new NotFoundException("[Account] Admin not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND));
+        if (!BaseConstant.ACCOUNT_KIND_ADMIN.equals(account.getKind())) {
+            throw new NotFoundException("[Account] Admin not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND);
+        }
+        if (account.getIsSuperAdmin()) {
+            throw new BadRequestException("[Account] Cannot change status of super admin", ErrorCode.ACCOUNT_ERROR_NOT_DELETE_SUPPER_ADMIN);
+        }
+
+        account.setStatus(form.getStatus());
+        accountRepository.save(account);
+
+        AccountFanoutDto data = accountMapper.fromAccountToFanoutDto(account);
+        rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_STATUS_CHANGED);
+
+        return makeSuccessResponse("Change status success");
     }
 }
