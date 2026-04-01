@@ -21,6 +21,7 @@ public class ResolutionValidation implements ConstraintValidator<ResolutionConst
             return true;
         }
         return Objects.equals(value, BaseConstant.RESOLUTION_HIGHEST)
+                || Objects.equals(value, BaseConstant.RESOLUTION_AUTO)
                 || Objects.equals(value, BaseConstant.RESOLUTION_1440P)
                 || Objects.equals(value, BaseConstant.RESOLUTION_1080P)
                 || Objects.equals(value, BaseConstant.RESOLUTION_720P);

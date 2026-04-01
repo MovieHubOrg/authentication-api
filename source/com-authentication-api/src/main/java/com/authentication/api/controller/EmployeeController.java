@@ -99,7 +99,7 @@ public class EmployeeController extends ABasicController {
     @PutMapping(value = "/update", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('EM_U')")
     public ApiMessageDto<Void> update(@Valid @RequestBody UpdateEmployeeForm form, BindingResult bindingResult) {
-        if (!isSuperAdmin()) {
+        if (!isAdmin()) {
             throw new UnauthorizationException("Not allowed");
         }
 
@@ -188,7 +188,7 @@ public class EmployeeController extends ABasicController {
     @GetMapping(value = "/list", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('EM_L')")
     public ApiMessageDto<ResponseListDto<List<AccountDto>>> list(AccountCriteria accountCriteria, Pageable pageable) {
-        if (!isSuperAdmin()) {
+        if (!isAdmin()) {
             throw new UnauthorizationException("[Employee] Not allowed to list employee.");
         }
         accountCriteria.setKind(BaseConstant.ACCOUNT_KIND_EMPLOYEE);
