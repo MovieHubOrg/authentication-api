@@ -385,7 +385,7 @@ public class UserController extends ABasicController {
 
     @Transactional
     @PutMapping(value = "/update-settings", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiMessageDto<Void> updateSettings(@Valid @RequestBody UserSettingsForm form) {
+    public ApiMessageDto<Void> updateSettings(@Valid @RequestBody UserSettingsForm form, BindingResult bindingResult) {
         User user = userRepository.findByIdAndAccountStatus(getCurrentUser(), BaseConstant.STATUS_ACTIVE)
                 .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
         String settingsJson;

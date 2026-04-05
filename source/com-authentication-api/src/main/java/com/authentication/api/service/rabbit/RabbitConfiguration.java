@@ -10,20 +10,12 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitConfiguration {
-    @Value("${rabbitmq.media.queue}")
-    private String mediaQueue;
-
     @Value("${rabbitmq.account.exchange}")
     private String accountExchange;
 
     @Bean
     public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
         return new RabbitAdmin(connectionFactory);
-    }
-
-    @Bean
-    public Queue mediaQueue() {
-        return new Queue(mediaQueue, true);
     }
 
     @Bean

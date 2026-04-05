@@ -53,7 +53,7 @@ public class BaseConstant {
     public static final Integer RESOLUTION_AUTO = 0;
     public static final Integer RESOLUTION_720P = 1;
     public static final Integer RESOLUTION_1080P = 2;
-    public static final Integer RESOLUTION_1440P = 4;
+    public static final Integer RESOLUTION_1440P = 3;
     public static final Integer RESOLUTION_HIGHEST = 4;
 
     public static final Double PLAYBACK_SPEED_025 = 0.25;

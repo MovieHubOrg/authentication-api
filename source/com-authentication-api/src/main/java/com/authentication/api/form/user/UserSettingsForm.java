@@ -34,7 +34,8 @@ public class UserSettingsForm {
     @ApiModelProperty(name = "audio")
     private Integer audio;
 
-    @PlaybackSpeedConstraint(allowNull = true)
+    @Min(value = 0, message = "playbackSpeed must be at least 0")
+    @Max(value = 2, message = "playbackSpeed must be at most 2.0")
     @ApiModelProperty(name = "playbackSpeed")
     private Double playbackSpeed;
 }
