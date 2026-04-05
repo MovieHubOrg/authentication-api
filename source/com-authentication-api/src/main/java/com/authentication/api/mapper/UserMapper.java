@@ -11,7 +11,6 @@ import java.util.List;
         nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE,
         uses = {GroupMapper.class})
 public interface UserMapper {
-
     @Mapping(source = "id", target = "id")
     @Mapping(source = "account.kind", target = "kind")
     @Mapping(source = "account.username", target = "username")
@@ -38,6 +37,7 @@ public interface UserMapper {
     @Mapping(source = "account.avatarPath", target = "avatarPath")
     @Mapping(source = "gender", target = "gender")
     @Mapping(source = "settings", target = "settings")
+    @Mapping(source = "isMakeSurvey", target = "isMakeSurvey")
     @Mapping(source = "account.group", target = "group", qualifiedByName = "fromEntityToGroupDtoAutoComplete")
     @BeanMapping(ignoreByDefault = true)
     @Named("fromEntityToUserDtoProfile")

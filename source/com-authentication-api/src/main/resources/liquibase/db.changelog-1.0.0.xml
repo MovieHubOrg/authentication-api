@@ -310,4 +310,9 @@
     <changeSet author="Authentication" id="1774969650456-1">
         <addNotNullConstraint columnDataType="int" columnName="kind" tableName="db_group" validate="true"/>
     </changeSet>
+    <changeSet author="Authentication" id="1775402708834-1">
+        <addColumn tableName="db_user">
+            <column name="is_make_survey" type="bit" afterColumn="settings"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

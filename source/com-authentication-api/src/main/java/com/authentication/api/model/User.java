@@ -26,4 +26,6 @@ public class User {
 
     @Column(columnDefinition = "TEXT")
     private String settings;
+
+    private Boolean isMakeSurvey = false;
 }

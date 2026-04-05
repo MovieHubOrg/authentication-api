@@ -40,4 +40,7 @@ public class UserDto extends ABasicAdminDto {
 
     @ApiModelProperty(name = "settings")
     private String settings;
+
+    @ApiModelProperty(name = "isMakeSurvey")
+    private Boolean isMakeSurvey;
 }

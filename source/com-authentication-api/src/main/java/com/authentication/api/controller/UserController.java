@@ -39,6 +39,7 @@ import org.springframework.security.oauth2.common.OAuth2AccessToken;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.validation.Valid;
 import java.io.IOException;
@@ -397,5 +398,15 @@ public class UserController extends ABasicController {
         user.setSettings(settingsJson);
         userRepository.save(user);
         return makeSuccessResponse("Update settings success");
+    }
+
+    @ApiIgnore
+    @PutMapping(value = "/update-make-survey", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiMessageDto<Void> updateMakeSurvey() {
+        User user = userRepository.findById(getCurrentUser())
+                .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
+        user.setIsMakeSurvey(true);
+        userRepository.save(user);
+        return makeSuccessResponse("Update make survey success");
     }
 }
