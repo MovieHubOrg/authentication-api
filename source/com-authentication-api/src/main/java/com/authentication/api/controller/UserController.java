@@ -11,6 +11,7 @@ import com.authentication.api.dto.user.UserDto;
 import com.authentication.api.dto.user.UserGoogleInfo;
 import com.authentication.api.exception.BadRequestException;
 import com.authentication.api.exception.NotFoundException;
+import com.authentication.api.exception.UnauthorizationException;
 import com.authentication.api.form.ChangeStatusForm;
 import com.authentication.api.form.user.*;
 import com.authentication.api.mapper.AccountMapper;
@@ -91,6 +92,9 @@ public class UserController extends ABasicController {
 
     @Value("${rabbitmq.app}")
     private String appName;
+
+    @Value("${server.internal.password}")
+    private String serverInternalPassword;
 
     @Transactional
     @PostMapping(value = "/register", produces = MediaType.APPLICATION_JSON_VALUE)
@@ -401,11 +405,16 @@ public class UserController extends ABasicController {
     }
 
     @ApiIgnore
-    @PutMapping(value = "/update-make-survey", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ApiMessageDto<Void> updateMakeSurvey() {
-        User user = userRepository.findById(getCurrentUser())
+    @PutMapping(value = "/internal/update-make-survey", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiMessageDto<Void> updateMakeSurvey(@RequestHeader(value = BaseConstant.HEADER_X_API_KEY) String apiKey,
+                                                @Valid @RequestBody UpdateMakeSurveyForm form,
+                                                BindingResult bindingResult) {
+        if (StringUtils.isBlank(apiKey) || !apiKey.equals(serverInternalPassword)) {
+            throw new UnauthorizationException("[ServerConfig] Unauthorized");
+        }
+        User user = userRepository.findById(form.getUserId())
                 .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
-        user.setIsMakeSurvey(true);
+        user.setIsMakeSurvey(form.getIsMakeSurvey());
         userRepository.save(user);
         return makeSuccessResponse("Update make survey success");
     }

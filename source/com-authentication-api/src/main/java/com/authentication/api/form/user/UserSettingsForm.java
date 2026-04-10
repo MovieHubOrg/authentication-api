@@ -1,6 +1,5 @@
 package com.authentication.api.form.user;
 
-import com.authentication.api.validation.PlaybackSpeedConstraint;
 import com.authentication.api.validation.ResolutionConstraint;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

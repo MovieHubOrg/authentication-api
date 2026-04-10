@@ -18,6 +18,7 @@ public class SecurityConstant {
             "/v1/user/auth/social-login",
             "/v1/user/auth/web-callback",
             "/v1/user/auth/mobile-callback",
+            "/v1/user/internal/**",
             "/v1/auth/get-anonymous-token",
             "/v1/auth/logout"
     };

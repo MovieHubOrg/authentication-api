@@ -11,6 +11,7 @@ public class BaseConstant {
 
     public static final String HEADER_CLIENT_TYPE = "X-Client-Type";
     public static final String HEADER_CLIENT_TYPE_WEB = "WEB";
+    public static final String HEADER_X_API_KEY = "X-Api-Key";
 
     public static final Integer BOOLEAN_FALSE = 0;
     public static final Integer BOOLEAN_TRUE = 1;
