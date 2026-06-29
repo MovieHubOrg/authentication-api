@@ -16,6 +16,7 @@ public class UserCriteria {
 
     private Long id;
     private Long ignoreUserId;
+    private String keyword;
     private String username;
     private Long kind;
     private String fullName;
@@ -35,6 +36,15 @@ public class UserCriteria {
 
                 if (getIgnoreUserId() != null) {
                     predicates.add(cb.notEqual(root.get("id"), getIgnoreUserId()));
+                }
+
+                if (getKeyword() != null) {
+                    String likePattern = "%" + getKeyword().toLowerCase() + "%";
+                    predicates.add(cb.or(
+                            cb.like(cb.lower(root.get("account").get("username")), likePattern),
+                            cb.like(cb.lower(root.get("account").get("fullName")), likePattern),
+                            cb.like(cb.lower(root.get("account").get("email")), likePattern)
+                    ));
                 }
 
                 if (getKind() != null) {

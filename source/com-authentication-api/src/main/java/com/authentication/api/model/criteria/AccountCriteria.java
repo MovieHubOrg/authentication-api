@@ -18,6 +18,7 @@ public class AccountCriteria implements Serializable {
     private static final long serialVersionUID = 1L;
     private Long id;
     private int kind;
+    private String keyword;
     private String username;
     private Integer status;
     private String email;
@@ -34,6 +35,15 @@ public class AccountCriteria implements Serializable {
 
                 if (getId() != null) {
                     predicates.add(cb.equal(root.get("id"), getId()));
+                }
+
+                if (getKeyword() != null) {
+                    String likePattern = "%" + getKeyword().toLowerCase() + "%";
+                    predicates.add(cb.or(
+                            cb.like(cb.lower(root.get("username")), likePattern),
+                            cb.like(cb.lower(root.get("fullName")), likePattern),
+                            cb.like(cb.lower(root.get("email")), likePattern)
+                    ));
                 }
                 if (getKind() > 0) {
                     predicates.add(cb.equal(root.get("kind"), getKind()));
