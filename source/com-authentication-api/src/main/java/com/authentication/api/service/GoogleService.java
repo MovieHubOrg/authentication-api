@@ -1,9 +1,13 @@
 package com.authentication.api.service;
 
 import com.authentication.api.constant.BaseConstant;
+import com.authentication.api.dto.ApiMessageDto;
 import com.authentication.api.dto.ErrorCode;
+import com.authentication.api.dto.setting.SettingDto;
 import com.authentication.api.dto.user.UserGoogleInfo;
 import com.authentication.api.exception.BadRequestException;
+import com.authentication.api.service.feign.FeignMovieService;
+import com.authentication.api.service.redis.RedisService;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
@@ -37,8 +41,11 @@ public class GoogleService {
     @Value("${social.google.android.client-id}")
     private String androidClientId;
 
-    @Value("${social.google.web.redirect-uri}")
-    private String webRedirectUri;
+    @Value("${social.google.web.redirect-uri.remote}")
+    private String webRedirectUriRemote;
+
+    @Value("${social.google.web.redirect-uri.local}")
+    private String webRedirectUriLocal;
 
     @Value("${social.google.user-info-uri}")
     private String googleUserInfoUri;
@@ -46,8 +53,17 @@ public class GoogleService {
     @Value("${social.google.token-uri}")
     private String googleTokenUri;
 
+    @Value("${movie.internal.api.key}")
+    private String movieInternalApiKey;
+
     @Autowired
     private RestTemplate restTemplate;
+
+    @Autowired
+    private RedisService redisService;
+
+    @Autowired
+    private FeignMovieService feignMovieSettingService;
 
     private final String ACCESS_TOKEN = "access_token";
 
@@ -56,7 +72,7 @@ public class GoogleService {
     public String generateAuthUrl() {
         return UriComponentsBuilder.fromHttpUrl("https://accounts.google.com/o/oauth2/v2/auth")
                 .queryParam("client_id", webClientId)
-                .queryParam("redirect_uri", webRedirectUri)
+                .queryParam("redirect_uri", getWebRedirectUri())
                 .queryParam("response_type", "code")
                 .queryParam("scope", "openid profile email")
                 .queryParam("access_type", "offline")
@@ -70,7 +86,7 @@ public class GoogleService {
         params.add("code", code);
         params.add("client_id", webClientId);
         params.add("client_secret", webClientSecret);
-        params.add("redirect_uri", webRedirectUri);
+        params.add("redirect_uri", getWebRedirectUri());
         params.add("grant_type", AUTHORIZATION_CODE);
 
         HttpHeaders headers = new HttpHeaders();
@@ -87,6 +103,31 @@ public class GoogleService {
         }
 
         return (String) body.get(ACCESS_TOKEN);
+    }
+
+    private String getWebRedirectUri() {
+        return isDevMode() ? webRedirectUriLocal : webRedirectUriRemote;
+    }
+
+    private boolean isDevMode() {
+        String cacheKey = redisService.buildKey(BaseConstant.SETTING_REDIS_KEY_PREFIX, BaseConstant.SETTING_KEY_DEV_MODE);
+        try {
+            SettingDto cachedDevMode = redisService.get(cacheKey, SettingDto.class);
+            if (cachedDevMode != null) {
+                return Boolean.parseBoolean(cachedDevMode.getValueData());
+            }
+
+            ApiMessageDto<SettingDto> response = feignMovieSettingService.findByKey(BaseConstant.SETTING_KEY_DEV_MODE, movieInternalApiKey);
+            boolean devMode = Boolean.FALSE;
+            if (response != null && Boolean.TRUE.equals(response.getResult()) && response.getData() != null) {
+                devMode = Boolean.parseBoolean(response.getData().getValueData());
+                redisService.put(cacheKey, response.getData(), 24 * 60 * 60); // Cache for 24 hours
+            }
+            return devMode;
+        } catch (Exception e) {
+            log.warn("Failed to load setting {}. Use remote Google redirect URI by default", BaseConstant.SETTING_KEY_DEV_MODE, e);
+            return false;
+        }
     }
 
     public UserGoogleInfo verifyIdToken(String idTokenStr, Integer platform) {

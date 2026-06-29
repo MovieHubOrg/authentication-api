@@ -3,16 +3,15 @@ package com.authentication.api.repository;
 import com.authentication.api.model.Account;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
 import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpecificationExecutor<Account> {
-    Optional<Account> findFirstByUsernameAndStatusNot(String username, int status);
-
-    Optional<Account> findFirstByPhoneAndStatusNot(String phone, int status);
-
     Optional<Account> findFirstByEmail(String email);
 
     Optional<Account> findFirstByEmailAndStatusNot(String email, int status);
@@ -27,12 +26,15 @@ public interface AccountRepository extends JpaRepository<Account, Long>, JpaSpec
 
     Boolean existsByEmailAndStatusNot(String email, int status);
 
-    Boolean existsByUsernameAndStatusNot(String username, int status);
-
     Optional<Account> findByIdAndStatus(Long id, Integer status);
 
     boolean existsByGroupId(Long groupId);
 
     @Query("SELECT a FROM Account a WHERE (a.username = :usernameOrEmail OR a.email = :usernameOrEmail) AND a.status != :status")
     Optional<Account> findByUsernameOrEmailAndStatusNot(@Param("usernameOrEmail") String usernameOrEmail, @Param("status") int status);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM Account a WHERE a.status = 0 AND a.createdDate <= :date")
+    void deleteUserPendingBeforeDate(@Param("date") Date date);
 }

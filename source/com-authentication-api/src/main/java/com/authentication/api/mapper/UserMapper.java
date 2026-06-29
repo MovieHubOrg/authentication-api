@@ -46,4 +46,15 @@ public interface UserMapper {
     @Mapping(source = "gender", target = "gender")
     @BeanMapping(ignoreByDefault = true)
     void fromUpdateUserProfileFormToEntity(UpdateUserProfileForm form, @MappingTarget User user);
+
+    @Mapping(source = "id", target = "id")
+    @Mapping(source = "account.fullName", target = "fullName")
+    @Mapping(source = "account.email", target = "email")
+    @Mapping(source = "account.avatarPath", target = "avatarPath")
+    @BeanMapping(ignoreByDefault = true)
+    @Named("entityToUserDtoAutoComplete")
+    UserDto entityToUserDtoAutoComplete(User user);
+
+    @IterableMapping(elementTargetType = UserDto.class, qualifiedByName = "entityToUserDtoAutoComplete")
+    List<UserDto> entityToUserDtoAutoCompleteList(List<User> users);
 }

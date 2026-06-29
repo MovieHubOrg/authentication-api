@@ -1,6 +1,9 @@
 package com.authentication.api.form.user;
 
 import com.authentication.api.validation.ResolutionConstraint;
+import com.authentication.api.validation.SubtitleBackgroundColorConstraint;
+import com.authentication.api.validation.SubtitleFontSizeConstraint;
+import com.authentication.api.validation.SubtitleTextColorConstraint;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Getter;
@@ -23,13 +26,13 @@ public class UserSettingsForm {
     @ApiModelProperty(name = "resolution")
     private Integer resolution;
 
-    @Min(value = 0, message = "Brightness must be at least 0")
-    @Max(value = 100, message = "Brightness must be at most 100")
+    @Min(value = 0, message = "brightness must be at least 0")
+    @Max(value = 100, message = "brightness must be at most 100")
     @ApiModelProperty(name = "brightness")
     private Integer brightness;
 
-    @Min(value = 0, message = "Audio must be at least 0")
-    @Max(value = 100, message = "Audio must be at most 100")
+    @Min(value = 0, message = "audio must be at least 0")
+    @Max(value = 100, message = "audio must be at most 100")
     @ApiModelProperty(name = "audio")
     private Integer audio;
 
@@ -37,4 +40,19 @@ public class UserSettingsForm {
     @Max(value = 2, message = "playbackSpeed must be at most 2.0")
     @ApiModelProperty(name = "playbackSpeed")
     private Double playbackSpeed;
+
+    @ApiModelProperty(name = "subtitleEnabled")
+    private Boolean subtitleEnabled;
+
+    @SubtitleFontSizeConstraint(allowNull = true)
+    @ApiModelProperty(name = "subtitleFontSize")
+    private Integer subtitleFontSize;
+
+    @SubtitleBackgroundColorConstraint(allowNull = true)
+    @ApiModelProperty(name = "subtitleBackgroundColor")
+    private Integer subtitleBackgroundColor;
+
+    @SubtitleTextColorConstraint(allowNull = true)
+    @ApiModelProperty(name = "subtitleTextColor")
+    private Integer subtitleTextColor;
 }

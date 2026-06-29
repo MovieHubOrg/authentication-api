@@ -15,6 +15,7 @@ import java.util.List;
 public class UserCriteria {
 
     private Long id;
+    private Long ignoreUserId;
     private String username;
     private Long kind;
     private String fullName;
@@ -30,6 +31,10 @@ public class UserCriteria {
                 List<Predicate> predicates = new ArrayList<>();
                 if (getId() != null) {
                     predicates.add(cb.equal(root.get("id"), getId()));
+                }
+
+                if (getIgnoreUserId() != null) {
+                    predicates.add(cb.notEqual(root.get("id"), getIgnoreUserId()));
                 }
 
                 if (getKind() != null) {

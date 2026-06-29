@@ -17,9 +17,11 @@ import com.authentication.api.form.user.*;
 import com.authentication.api.mapper.AccountMapper;
 import com.authentication.api.mapper.UserMapper;
 import com.authentication.api.model.Account;
+import com.authentication.api.model.Group;
 import com.authentication.api.model.User;
 import com.authentication.api.model.criteria.UserCriteria;
 import com.authentication.api.repository.AccountRepository;
+import com.authentication.api.repository.GroupRepository;
 import com.authentication.api.repository.UserRepository;
 import com.authentication.api.service.*;
 import com.authentication.api.service.rabbit.RabbitService;
@@ -62,6 +64,9 @@ public class UserController extends ABasicController {
     private UserRepository userRepository;
 
     @Autowired
+    private GroupRepository groupRepository;
+
+    @Autowired
     private UserMapper userMapper;
 
     @Autowired
@@ -101,10 +106,13 @@ public class UserController extends ABasicController {
     public ApiMessageDto<Void> create(@Valid @RequestBody RegisterUserForm form) throws IOException {
         Account account = accountRepository.findFirstByEmailAndStatusNot(form.getEmail(), BaseConstant.STATUS_DELETE).orElse(null);
         if (account != null) {
-            throw new BadRequestException("[Account] Email existed", ErrorCode.ACCOUNT_ERROR_EMAIL_EXISTED);
+            throw new BadRequestException("[Account] Email existed", ErrorCode.USER_ERROR_EMAIL_EXISTED);
         }
+        Group group = groupRepository.findById(BaseConstant.GROUP_USER_ID)
+                .orElseThrow(() -> new NotFoundException("[Group] Not found", ErrorCode.GROUP_ERROR_NOT_FOUND));
 
         account = accountMapper.fromRegisterUserFormToEntity(form);
+        account.setGroup(group);
         account.setPassword(passwordEncoder.encode(form.getPassword()));
         account.setKind(BaseConstant.ACCOUNT_KIND_USER);
         account.setStatus(BaseConstant.STATUS_PENDING);
@@ -124,7 +132,7 @@ public class UserController extends ABasicController {
     @PostMapping(value = "/verify-otp", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiMessageDto<Void> verifyOtp(@Valid @RequestBody VerifyOtpForm form) {
         Account account = accountRepository.findFirstByEmailAndStatus(form.getEmail(), BaseConstant.STATUS_PENDING)
-                .orElseThrow(() -> new NotFoundException("[Account] Not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("[Account] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
         if (!otpService.verifyOtp(form.getEmail(), form.getOtp())) {
             throw new BadRequestException("Invalid OTP", ErrorCode.USER_ERROR_OTP_INVALID);
@@ -148,7 +156,7 @@ public class UserController extends ABasicController {
     @PostMapping(value = "/resend-otp", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiMessageDto<Void> resendOtp(@Valid @RequestBody ResendOtpForm form) throws IOException {
         Account account = accountRepository.findFirstByEmailAndStatusNot(form.getEmail(), BaseConstant.STATUS_DELETE)
-                .orElseThrow(() -> new NotFoundException("[Account] Not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("[Account] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
         String otp = otpService.resendOtp(account.getEmail());
         if (otp == null) {
@@ -166,7 +174,7 @@ public class UserController extends ABasicController {
     @PostMapping(value = "/request-forgot-password", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiMessageDto<Void> requestForgotPassword(@Valid @RequestBody RequestForgotPasswordForm form) throws IOException {
         Account account = accountRepository.findFirstByEmailAndStatus(form.getEmail(), BaseConstant.STATUS_ACTIVE)
-                .orElseThrow(() -> new NotFoundException("[Account] Not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("[Account] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
         String otp = otpService.generate(otpLength);
         otpService.storeOtp(account.getEmail(), otp);
@@ -182,7 +190,7 @@ public class UserController extends ABasicController {
     @PostMapping(value = "/forgot-password", produces = MediaType.APPLICATION_JSON_VALUE)
     public ApiMessageDto<Void> forgotPassword(@Valid @RequestBody ForgotPasswordForm form) {
         Account account = accountRepository.findFirstByEmailAndStatus(form.getEmail(), BaseConstant.STATUS_ACTIVE)
-                .orElseThrow(() -> new NotFoundException("[Account] Not found", ErrorCode.ACCOUNT_ERROR_NOT_FOUND));
+                .orElseThrow(() -> new NotFoundException("[Account] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
         if (!Objects.equals(form.getPassword(), form.getConfirmPassword())) {
             throw new BadRequestException("[Account] Confirm password invalid", ErrorCode.USER_ERROR_CONFIRM_PASSWORD_INVALID);
@@ -202,7 +210,7 @@ public class UserController extends ABasicController {
 
     @GetMapping(value = "/get/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USR_V')")
-    public ApiMessageDto<UserDto> get(@PathVariable("id") Long id) {
+    public ApiMessageDto<UserDto> get(@PathVariable Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
@@ -214,6 +222,12 @@ public class UserController extends ABasicController {
     public ApiMessageDto<ResponseListDto<List<UserDto>>> list(UserCriteria criteria, Pageable pageable) {
         Page<User> users = userRepository.findAll(criteria.getSpecification(), pageable);
         return makeSuccessResponse(makeResponseListDto(users, userMapper::fromEntityToUserDtoList), "Get list user success");
+    }
+
+    @GetMapping(value = "/auto-complete", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ApiMessageDto<ResponseListDto<List<UserDto>>> autoComplete(UserCriteria criteria, Pageable pageable) {
+        Page<User> users = userRepository.findAll(criteria.getSpecification(), pageable);
+        return makeSuccessResponse(makeResponseListDto(users, userMapper::entityToUserDtoAutoCompleteList), "Get list auto complete user success");
     }
 
     @Transactional
@@ -270,7 +284,7 @@ public class UserController extends ABasicController {
     @Transactional
     @DeleteMapping(value = "/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     @PreAuthorize("hasRole('USR_D')")
-    public ApiMessageDto<Void> delete(@PathVariable("id") Long id) {
+    public ApiMessageDto<Void> delete(@PathVariable Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new NotFoundException("[User] Not found", ErrorCode.USER_ERROR_NOT_FOUND));
 
@@ -289,6 +303,11 @@ public class UserController extends ABasicController {
     public OAuth2AccessToken login(@Valid @RequestBody LoginUserForm form, BindingResult bindingResult) {
         User user = userRepository.findFirstByAccountEmailAndAccountStatusNot(form.getEmail(), BaseConstant.STATUS_DELETE)
                 .orElseThrow(() -> new UsernameNotFoundException("Invalid username or password."));
+
+        if (StringUtils.isBlank(user.getAccount().getPassword())) {
+            log.error("Password is blank for account login google with email {}", form.getEmail());
+            throw new UsernameNotFoundException("Invalid username or password.");
+        }
 
         if (!passwordEncoder.matches(form.getPassword(), user.getAccount().getPassword())) {
             log.error("Invalid username or password.");
@@ -378,7 +397,6 @@ public class UserController extends ABasicController {
         return result;
     }
 
-    @Transactional
     @PostMapping(value = "/auth/mobile-callback", produces = MediaType.APPLICATION_JSON_VALUE)
     public OAuth2AccessToken socialMobileCallback(@Valid @RequestBody GoogleMobileCallback callback, BindingResult bindingResult) throws IOException {
         UserGoogleInfo userInfo = googleService.verifyIdToken(callback.getIdToken(), callback.getPlatform());

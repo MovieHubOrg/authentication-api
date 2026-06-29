@@ -18,6 +18,8 @@ public class BaseConstant {
 
     public static final String RESTAURANT_SETTING_SAMPLE_DATA = "{\"customDateOff\":{\"startTime\":\"25/02/2025 14:27:24\",\"endTime\":\"01/03/2025 03:00:00\"},\"general\":{\"timezone\":{\"name\":\"Asia/Ho_Chi_Minh\",\"offset\":\"+7:00\"},\"currency\":\"€\",\"currency_position\":1,\"decimal_separator\":\",\",\"decimal_space\":\"2\",\"group_separator\":\".\",\"date_time_format\":\"DD.MM.YYYYHH:mm\",\"workload\":20},\"happy_hours_settings\":[{\"timeframe\":\"Timeframe1\",\"time_of_weeks\":[1,1,0,0,0,0,0],\"type\":1,\"from\":{\"hour\":\"09\",\"minute\":\"00\"},\"to\":{\"hour\":\"18\",\"minute\":\"19\"},\"status\":1},{\"timeframe\":\"Timeframe2\",\"time_of_weeks\":[1,1,1,1,0,0,0],\"type\":1,\"from\":{\"hour\":\"00\",\"minute\":\"00\"},\"to\":{\"hour\":\"00\",\"minute\":\"00\"},\"status\":1},{\"timeframe\":\"Timeframe3\",\"time_of_weeks\":[0,0,0,0,0,0,0],\"type\":1,\"from\":{\"hour\":\"00\",\"minute\":\"00\"},\"to\":{\"hour\":\"00\",\"minute\":\"00\"},\"status\":1},{\"timeframe\":\"Timeframe4\",\"time_of_weeks\":[0,0,0,0,0,0,0],\"type\":1,\"from\":{\"hour\":\"00\",\"minute\":\"00\"},\"to\":{\"hour\":\"00\",\"minute\":\"00\"},\"status\":1},{\"timeframe\":\"Timeframe5\",\"time_of_weeks\":[0,0,0,0,0,0,0],\"type\":1,\"from\":{\"hour\":\"00\",\"minute\":\"00\"},\"to\":{\"hour\":\"00\",\"minute\":\"00\"},\"status\":1},{\"timeframe\":\"Timeframe6\",\"time_of_weeks\":[0,0,0,0,0,0,0],\"type\":1,\"from\":{\"hour\":\"00\",\"minute\":\"00\"},\"to\":{\"hour\":\"00\",\"minute\":\"00\"},\"status\":1},{\"timeframe\":\"Timeframe7\",\"time_of_weeks\":[0,0,0,0,0,0,0],\"type\":1,\"from\":{\"hour\":\"00\",\"minute\":\"00\"},\"to\":{\"hour\":\"00\",\"minute\":\"00\"},\"status\":1},{\"timeframe\":\"Timeframe8\",\"time_of_weeks\":[0,0,0,0,0,0,0],\"type\":1,\"from\":{\"hour\":\"00\",\"minute\":\"00\"},\"to\":{\"hour\":\"00\",\"minute\":\"00\"},\"status\":1},{\"timeframe\":\"Timeframe9\",\"time_of_weeks\":[0,0,0,0,0,0,0],\"type\":1,\"from\":{\"hour\":\"00\",\"minute\":\"00\"},\"to\":{\"hour\":\"00\",\"minute\":\"00\"},\"status\":1},{\"timeframe\":\"Timeframe10\",\"time_of_weeks\":[0,0,0,0,0,0,0],\"type\":1,\"from\":{\"hour\":\"00\",\"minute\":\"00\"},\"to\":{\"hour\":\"00\",\"minute\":\"00\"},\"status\":1}],\"printers\":[{\"number\":1,\"ip\":\"\",\"name\":\"\",\"language\":\"default\",\"group_name\":\"\",\"is_change_color_name\":true,\"options\":{\"is_check_sheet\":true,\"is_print_time\":false,\"is_print_next_part\":false,\"is_beep\":false,\"is_check_sheet_equal_items\":true}},{\"number\":2,\"ip\":\"\",\"name\":\"\",\"language\":\"default\",\"group_name\":\"\",\"is_change_color_name\":true,\"options\":{\"is_check_sheet\":true,\"is_print_time\":true,\"is_print_next_part\":false,\"is_beep\":true,\"is_check_sheet_equal_items\":true}},{\"number\":3,\"ip\":\"\",\"name\":\"\",\"language\":\"default\",\"group_name\":\"\",\"is_change_color_name\":false,\"options\":{\"is_check_sheet\":false,\"is_print_time\":false,\"is_print_next_part\":false,\"is_beep\":false,\"is_check_sheet_equal_items\":false}}],\"language\":{\"languages\":[{\"name\":\"Vietnam\",\"key\":\"vi-VN\"},{\"name\":\"UnitedStates\",\"key\":\"en-US\"},{\"name\":\"Germany\",\"key\":\"de-DE\"}]},\"location\":{\"image\":\"\",\"redirectUrl\":\"\",\"latitude\":\"\",\"longitude\":\"\"},\"openTime\":[{\"name\":0,\"time\":[{\"from\":\"07:00\",\"to\":\"10:00\"},{\"from\":\"06:00\",\"to\":\"22:02\"}]},{\"name\":1,\"time\":[{\"from\":\"07:00\",\"to\":\"10:00\"},{\"from\":\"11:00\",\"to\":\"22:02\"}]},{\"name\":2,\"time\":[{\"from\":\"07:00\",\"to\":\"10:00\"},{\"from\":\"06:00\",\"to\":\"22:02\"}]},{\"name\":3,\"time\":[{\"from\":\"07:00\",\"to\":\"10:00\"},{\"from\":\"10:39\",\"to\":\"22:02\"}]},{\"name\":4,\"time\":[{\"from\":\"07:00\",\"to\":\"10:00\"},{\"from\":\"06:40\",\"to\":\"22:02\"}]},{\"name\":5,\"time\":[{\"from\":\"07:00\",\"to\":\"10:00\"},{\"from\":\"08:00\",\"to\":\"22:02\"}]},{\"name\":6,\"time\":[{\"from\":\"07:00\",\"to\":\"10:00\"},{\"from\":\"06:00\",\"to\":\"22:02\"}]}],\"homePageSlidesShow\":[{\"title\":\"\",\"description\":\"\",\"imageUrl\":\"\",\"url\":\"\",\"actionType\":\"\"}],\"loginSlidesShow\":[{\"title\":\"\",\"description\":\"\",\"imageUrl\":\"\",\"url\":\"\",\"actionType\":\"\"}],\"timeOfDay\":{\"morning\":{\"start\":\"8:00\",\"end\":\"12:00\"},\"afternoon\":{\"start\":\"13:00\",\"end\":\"17:00\"},\"evening\":{\"start\":\"18:00\",\"end\":\"22:00\"}},\"payments\":[{\"id\":1,\"name\":\"Cash\",\"icon\":\"\",\"isOn\":false,\"isDefault\":true,\"iconDisable\":\"\",\"code\":1},{\"id\":2,\"name\":\"Visa\",\"icon\":\"\",\"isOn\":false,\"isDefault\":true,\"iconDisable\":\"\",\"code\":2},{\"id\":3,\"name\":\"EC\",\"icon\":\"\",\"isOn\":false,\"isDefault\":true,\"iconDisable\":\"\",\"code\":3},{\"id\":4,\"name\":\"PromotionCode\",\"icon\":\"\",\"isOn\":false,\"isDefault\":true,\"iconDisable\":\"\",\"code\":4},{\"id\":5,\"name\":\"Paypal\",\"icon\":\"\",\"isOn\":false,\"isDefault\":true,\"iconDisable\":\"\",\"code\":5},{\"id\":6,\"name\":\"Mastercard\",\"icon\":\"\",\"isOn\":false,\"isDefault\":true,\"iconDisable\":\"\",\"code\":6}]}";
 
+    public static final Long GROUP_USER_ID = 4L;
+
     public static final String PHONE_PATTERN = "^0[35789][0-9]{8}$";
     public static final String EMAIL_PATTERN = "^(?!.*[.]{2,})[a-zA-Z0-9.%]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$";
     public static final String USERNAME_PATTERN = "^(?=.{3,20}$)(?!.*[_.]{2})[a-zA-Z][a-zA-Z0-9_]*[a-zA-Z0-9]$";
@@ -57,6 +59,19 @@ public class BaseConstant {
     public static final Integer RESOLUTION_1440P = 3;
     public static final Integer RESOLUTION_HIGHEST = 4;
 
+    public static final int FONT_SIZE_SMALL = 0;
+    public static final int FONT_SIZE_MEDIUM = 1;
+    public static final int FONT_SIZE_LARGE = 2;
+
+    public static final int TEXT_COLOR_YELLOW = 0;
+    public static final int TEXT_COLOR_WHITE = 1;
+    public static final int TEXT_COLOR_BLACK = 2;
+
+    public static final int BG_COLOR_YELLOW = 0;
+    public static final int BG_COLOR_WHITE = 1;
+    public static final int BG_COLOR_BLACK = 2;
+    public static final int BG_COLOR_NONE = 3;
+
     public static final Double PLAYBACK_SPEED_025 = 0.25;
     public static final Double PLAYBACK_SPEED_05 = 0.5;
     public static final Double PLAYBACK_SPEED_075 = 0.75;
@@ -75,6 +90,9 @@ public class BaseConstant {
     public static final String EVENT_ACCOUNT_UPDATED = "ACCOUNT_UPDATED";
     public static final String EVENT_ACCOUNT_DELETED = "ACCOUNT_DELETED";
     public static final String EVENT_ACCOUNT_STATUS_CHANGED = "ACCOUNT_STATUS_CHANGED";
+
+    public static final String SETTING_REDIS_KEY_PREFIX = "setting";
+    public static final String SETTING_KEY_DEV_MODE = "is_dev_mode";
 
     private BaseConstant() {
         throw new IllegalStateException("Utility class");

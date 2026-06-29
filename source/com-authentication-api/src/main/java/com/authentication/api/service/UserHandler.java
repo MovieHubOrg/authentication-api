@@ -2,17 +2,24 @@ package com.authentication.api.service;
 
 import com.authentication.api.config.CustomTokenEnhancer;
 import com.authentication.api.constant.BaseConstant;
+import com.authentication.api.dto.ErrorCode;
 import com.authentication.api.dto.OauthClientDetailsDto;
+import com.authentication.api.dto.account.AccountFanoutDto;
 import com.authentication.api.dto.user.UserGoogleInfo;
 import com.authentication.api.exception.BadRequestException;
+import com.authentication.api.exception.NotFoundException;
+import com.authentication.api.mapper.AccountMapper;
 import com.authentication.api.model.Account;
 import com.authentication.api.model.Group;
 import com.authentication.api.model.User;
 import com.authentication.api.repository.AccountRepository;
+import com.authentication.api.repository.GroupRepository;
 import com.authentication.api.repository.UserRepository;
+import com.authentication.api.service.rabbit.RabbitService;
 import com.authentication.api.utils.TemplateUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,13 +47,19 @@ public class UserHandler {
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private CommonAsyncService commonAsyncService;
+    private GroupRepository groupRepository;
     @Autowired
     private JdbcTemplate jdbcTemplate;
     @Autowired
     private TokenStore tokenStore;
     @Autowired
     private JwtAccessTokenConverter accessTokenConverter;
+    @Autowired
+    private AccountMapper accountMapper;
+    @Autowired
+    private RabbitService rabbitService;
+    @Value("${rabbitmq.app}")
+    private String appName;
 
     private final String clientId = "abc_client";
     private final String grantType = "user";
@@ -58,7 +71,11 @@ public class UserHandler {
 
         Account account = accountRepository.findFirstByEmail(email).orElse(null);
         if (account == null) {
+            Group group = groupRepository.findById(BaseConstant.GROUP_USER_ID)
+                    .orElseThrow(() -> new NotFoundException("[Group] Not found", ErrorCode.GROUP_ERROR_NOT_FOUND));
+
             account = new Account();
+            account.setGroup(group);
             account.setEmail(email);
             account.setFullName(name);
             account.setAvatarPath(picture);
@@ -67,9 +84,9 @@ public class UserHandler {
             User user = new User();
             user.setAccount(account);
             userRepository.save(user);
-            // Send email
-            String htmlContent = TemplateUtils.loadTemplate("register-success.html").replace("${email}", email);
-            commonAsyncService.sendEmail(email, htmlContent, "Chào mừng đến MovieHub", true);
+
+            AccountFanoutDto data = accountMapper.fromUserToFanoutDto(user);
+            rabbitService.handleSendFanout(appName, data, BaseConstant.EVENT_ACCOUNT_CREATED);
         }
         return getAccessToken(account);
     }

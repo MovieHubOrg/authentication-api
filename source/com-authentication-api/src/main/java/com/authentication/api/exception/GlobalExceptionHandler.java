@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.NoHandlerFoundException;
@@ -128,5 +129,14 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         apiMessageDto.setResult(false);
         apiMessageDto.setMessage(ex.getMessage());
         return new ResponseEntity<>(apiMessageDto, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    @ExceptionHandler({UsernameNotFoundException.class})
+    public ResponseEntity<ApiMessageDto<String>> invalidAccount(UsernameNotFoundException ex) {
+        ApiMessageDto<String> apiMessageDto = new ApiMessageDto<>();
+        apiMessageDto.setResult(false);
+        apiMessageDto.setCode("ERROR");
+        apiMessageDto.setMessage(ex.getMessage());
+        return new ResponseEntity<>(apiMessageDto, HttpStatus.BAD_REQUEST);
     }
 }
