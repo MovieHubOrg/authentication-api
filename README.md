@@ -1,56 +1,58 @@
-# User-service
-This is a service reserved for authentication and authorization based on Oauth2 protocol.
+# Authentication API
+
+Authentication and authorization service (OAuth2) for the MovieHub system.
 
 ## Tech stack
-- Spring-boot 2.3
-- MySQL
+- Java 11, Spring Boot 2.3
+- MySQL, Liquibase
+- RabbitMQ
 - Swagger
 - Docker
 
-## Service configuration
-- Database config
-    ```
-    spring.datasource.url=jdbc:postgresql://<db host>:<db port>/<db name>
-    spring.datasource.username=<username>
-    spring.datasource.password=<password>
-    ```
+## Configuration
 
-- Rabbitmq config
-    ```
-    spring.rabbitmq.host=<host rabbitmq>
-    spring.rabbitmq.port=<port rabbitmq>
-    spring.rabbitmq.username=<user rabbitmq>
-    spring.rabbitmq.password=<password>
+**Database**
+```properties
+spring.datasource.url=jdbc:mysql://<db-host>:<db-port>/<db-name>?useUnicode=yes&characterEncoding=UTF-8&zeroDateTimeBehavior=convertToNull
+spring.datasource.username=<username>
+spring.datasource.password=<password>
+spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
+```
 
-    app.rabbitmq.exchange.topic.userEvent=User_Event
-    app.rabbitmq.queue.new.user=new_user
-    ```
+**RabbitMQ**
+```properties
+spring.rabbitmq.host=<host>
+spring.rabbitmq.port=<port>
+spring.rabbitmq.username=<username>
+spring.rabbitmq.password=<password>
 
-- Initial data
-  Currently all initial data will define on `/resource/data.sql`
+app.rabbitmq.exchange.topic.userEvent=User_Event
+app.rabbitmq.queue.new.user=new_user
+```
 
+**Migration**
+Schema and data migrations are defined in `src/main/resources/liquibase/db.changelog-master.xml`.
 
-## BUILD
--  Jar file
-   ```mvn clean package```
+## Build
 
-- Docker images
-  ``` docker build . --tag [image-tag-name]```
-  Ex: ```docker build . --tag user-service-be-v1.0```
+```bash
+mvn clean package
+```
 
-## LAUNCH APPLICATION
-- From Jar
-  ```java -jar [app jar file] [-Dspring.profiles.active=test]```
+Build Docker image:
+```bash
+docker build . --tag authentication-api:v1.0
+```
 
--  From docker images
-   ```docker run -it -p 8080:8080 -e "SPRING_PROFILES_ACTIVE=[profile-name]" [image-tag-version]```
+## Run
 
-   Ex: ```docker run -it -p 8080:8080 -e "SPRING_PROFILES_ACTIVE=dev" user-service-be-v1.0```
+From jar file:
+```bash
+java -jar <app.jar> -Dspring.profiles.active=<profile>
+```
 
+## Contact
 
-## Contact point
-If you have any problem when rebuild application feel free to contact persons in below:
-
-| Contact name | Email | Position |
-| ---         | ---   | ---      |
-|     |   | Senior software engineer |
+| Name | Email | Role |
+| --- | --- | --- |
+| | | Senior Software Engineer |

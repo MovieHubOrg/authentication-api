@@ -24,6 +24,7 @@ public class AccountCriteria implements Serializable {
     private String email;
     private String fullName;
     private String phone;
+    private Long groupId;
 
     public Specification<Account> getSpecification() {
         return new Specification<Account>() {
@@ -59,6 +60,9 @@ public class AccountCriteria implements Serializable {
                 }
                 if (!StringUtils.isEmpty(getFullName())) {
                     predicates.add(cb.like(cb.lower(root.get("fullName")), "%" + getFullName().toLowerCase() + "%"));
+                }
+                if (getGroupId() != null) {
+                    predicates.add(cb.equal(root.get("group").get("id"), getGroupId()));
                 }
                 return cb.and(predicates.toArray(new Predicate[predicates.size()]));
             }
